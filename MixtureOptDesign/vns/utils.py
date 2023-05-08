@@ -2,6 +2,8 @@ import numpy as np
 from itertools import product,combinations
 import numpy as np
 
+from MixtureOptDesign.vns.vns import unique_rows
+
 def generate_simplex_lattice_design(q:int, m:int)-> np.ndarray:
     """
     Generate a simplex lattice design for q components and m levels.
@@ -87,32 +89,42 @@ def generate_initial_design(lattice_design, j=2, s=16,k=10):
     """
     
     # get the total number of points in the lattice design
-    #  n points in the canditate sets
     n = lattice_design.shape[0]
     
-    ## Take k random points to meet the restriction of k different points in total
-
-    # generate k random indices
-    lattice_indices = np.random.choice(n, size=k, replace=False)
-
-    # get k random points
-    lattice_points = lattice_design[lattice_indices]
-
-    # get (n-k) other points
-    other_points = np.delete(lattice_design, lattice_indices, axis=0)
+    # ensure j is between 2 and k
+    if j < 2 or j > k:
+        raise ValueError("j must be between 2 and k")
     
-    ## Allocate points randomely  in a design with j alternatives and s choice sets
-
-    # generate all possible combinations of lattice(k) points of size j
-    choice_set = np.array(list(combinations(lattice_points, j)))
-
-    # choose s random combinations from the list of all possible combinations
-    choice_indices = np.random.choice(choice_set.shape[0], size=s, replace=False)
-
-    # create the initial design
-    initial_design = choice_set[choice_indices,:,:]
     
-     # reshape initial design 
-    initial_design = initial_design.transpose(2, 1, 0)
+    # initialize number of unique rows to 0
+    unique_rows_count = 0
+    
+    # keep generating an initial design until it has k distinct points
+    while unique_rows_count != k:
+
+        # generate k random indices
+        lattice_indices = np.random.choice(n, size=k, replace=False)
+
+        # get k random points
+        lattice_points = lattice_design[lattice_indices]
+
+        # get (n-k) other points
+        other_points = np.delete(lattice_design, lattice_indices, axis=0)
+        
+        ## Allocate points randomely  in a design with j alternatives and s choice sets
+
+        # generate all possible combinations of lattice(k) points of size j
+        choice_set = np.array(list(combinations(lattice_points, j)))
+
+        # choose s random combinations from the list of all possible combinations
+        choice_indices = np.random.choice(choice_set.shape[0], size=s, replace=False)
+
+        # create the initial design
+        initial_design = choice_set[choice_indices,:,:]
+        
+        # reshape initial design 
+        initial_design = initial_design.transpose(2, 1, 0)
+        # get the number of unique rows in the initial design
+        unique_rows_count= unique_rows(initial_design).shape[0]
     
     return initial_design, lattice_points, other_points
