@@ -102,13 +102,16 @@ class Cluster:
     def fit(self, k:int)-> np.ndarray:
         pass
 
-    def design(self) -> np.ndarray:
-        # Check if clusters have been computed
+    
+    
+    def clustered_design(self)-> np.ndarray:
         if self.clusters is None:
             raise ValueError("No clusters found. Call 'fit' method first.")
 
         # Use the replace_with_clusters function to assign each data point to its corresponding cluster
-        return replace_with_clusters(self._design_2d, self.labels, self.clusters)
+        replaced_data = replace_with_clusters(self._design_2d, self.labels, self.clusters)
+        return replaced_data.T.reshape(self._design.shape)
+        
     
     def get_elbow_curve(self,beta:np.ndarray,order:int,name,linkage_methods:List[str]=['ward', 'complete', 'average']):
         """
@@ -151,11 +154,10 @@ class Cluster:
 
             for k in range( min_clusters, max_clusters + 1):
                 # Fit the clustering algorithm for the given value of k
-                self.fit(k,linkage_method)
+                
                 
                 # Replace the data points with cluster values
-                replaced_data = self.design()
-                cluster_design = replaced_data.T.reshape(self._design.shape)
+                cluster_design =self.fit(k,linkage_method)
                 
                 # Calculate the I-optimality criterion for the replaced values
 
@@ -244,6 +246,7 @@ class HierarchicalCluster(Cluster):
 
         # Stack the mean coordinates of each cluster
         self.clusters = np.stack(means)
+        return self.clustered_design()
         
     def dendogram(self):
         
