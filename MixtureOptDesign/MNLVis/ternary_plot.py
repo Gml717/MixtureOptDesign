@@ -48,9 +48,9 @@ def plot_ternary_design(design):
     check_mnl_design_sum(design)
     
     # Flatten design points
-    ingredient1 = design[0].flatten()
-    ingredient2 = design[1].flatten()
-    ingredient3 = design[2].flatten()
+    ingredient1 = abs(design[0].flatten())
+    ingredient2 = abs(design[1].flatten())
+    ingredient3 = abs(design[2].flatten())
 
     # Create figure object
     fig = go.Figure()

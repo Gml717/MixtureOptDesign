@@ -409,7 +409,7 @@ class TestIOptimality(object):
         beta = np.array( (1.36, 1.57, 2.47, -0.43, 0.50, 1.09))
         I_opt_value = get_i_optimality_mnl(design,3,beta)
         expected_value = 1.193834
-        assert np.isclose(I_opt_value, expected_value, rtol=1e-2)
+        assert np.isclose(np.exp(I_opt_value), expected_value, rtol=1e-2)
     
     def test_design_02(self):
         
@@ -417,7 +417,7 @@ class TestIOptimality(object):
         beta = np.array( (1.36, 1.57, 2.47, -0.43, 0.50, 1.09))
         I_opt_value = get_i_optimality_mnl(design,3,beta)
         expected_value = 1.033
-        assert np.isclose(I_opt_value, expected_value, rtol=1e-2)
+        assert np.isclose(np.exp(I_opt_value), expected_value, rtol=1e-2)
     
     def test_design_03(self):
         
@@ -426,7 +426,7 @@ class TestIOptimality(object):
         beta = np.array( (1.36, 1.57, 2.47, -0.43, 0.50, 1.09))
         I_opt_value = get_i_optimality_mnl(design,3,beta)
         expected_value = 0.5029075
-        assert np.isclose(I_opt_value, expected_value, rtol=1e-2)
+        assert np.isclose(np.exp(I_opt_value), expected_value, rtol=1e-2)
     
     def test_design_04(self):
         
@@ -435,7 +435,7 @@ class TestIOptimality(object):
         beta = np.array((0.86, 0.21, 3.07, 2.34, 3.24, -20.59))
         I_opt_value = get_i_optimality_mnl(design,3,beta)
         expected_value = 2.28
-        assert np.isclose(I_opt_value, expected_value, rtol=1e-2)
+        assert np.isclose(np.exp(I_opt_value), expected_value, rtol=1e-2)
     
     def test_design_05(self):
         
@@ -444,7 +444,7 @@ class TestIOptimality(object):
         beta = np.array((0.86, 0.21, 3.07, 2.34, 3.24, -20.59))
         I_opt_value = get_i_optimality_mnl(design,3,beta)
         expected_value = 2.30
-        assert np.isclose(I_opt_value, expected_value, rtol=1e-2)   
+        assert np.isclose(np.exp(I_opt_value), expected_value, rtol=1e-2)   
         
     def test_design_06(self):
         

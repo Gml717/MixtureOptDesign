@@ -18,7 +18,7 @@ class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
             np.ndarray: Optimized design 
     """
         
-        design = design_.copy()
+        design = design_[1].copy()
         unique_design_points = unique_rows(design)
         
         # set up initial optimality value   
@@ -61,4 +61,4 @@ class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
         print("Original Optimality criterion value: ", opt_crit_value_orig)
         print("Final Optimality criterion value: ", i_best)
         print("Number of iterations: ", it)
-        return design
+        return design,design_[0],i_best

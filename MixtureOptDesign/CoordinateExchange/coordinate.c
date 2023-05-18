@@ -1625,61 +1625,11 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
 /* BufferFallbackError.proto */
 static void __Pyx_RaiseBufferFallbackError(void);
 
-/* pyobject_as_double.proto */
-static double __Pyx__PyObject_AsDouble(PyObject* obj);
-#if CYTHON_COMPILING_IN_PYPY
-#define __Pyx_PyObject_AsDouble(obj)\
-(likely(PyFloat_CheckExact(obj)) ? PyFloat_AS_DOUBLE(obj) :\
- likely(PyInt_CheckExact(obj)) ?\
- PyFloat_AsDouble(obj) : __Pyx__PyObject_AsDouble(obj))
-#else
-#define __Pyx_PyObject_AsDouble(obj)\
-((likely(PyFloat_CheckExact(obj))) ?\
- PyFloat_AS_DOUBLE(obj) : __Pyx__PyObject_AsDouble(obj))
-#endif
-
 /* ObjectGetItem.proto */
 #if CYTHON_USE_TYPE_SLOTS
 static CYTHON_INLINE PyObject *__Pyx_PyObject_GetItem(PyObject *obj, PyObject* key);
 #else
 #define __Pyx_PyObject_GetItem(obj, key)  PyObject_GetItem(obj, key)
-#endif
-
-/* GetTopmostException.proto */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
-#endif
-
-/* SaveResetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
-#else
-#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
-#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
-#endif
-
-/* FastTypeChecks.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-#define __Pyx_TypeCheck(obj, type) __Pyx_IsSubtype(Py_TYPE(obj), (PyTypeObject *)type)
-static CYTHON_INLINE int __Pyx_IsSubtype(PyTypeObject *a, PyTypeObject *b);
-static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches(PyObject *err, PyObject *type);
-static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObject *type1, PyObject *type2);
-#else
-#define __Pyx_TypeCheck(obj, type) PyObject_TypeCheck(obj, (PyTypeObject *)type)
-#define __Pyx_PyErr_GivenExceptionMatches(err, type) PyErr_GivenExceptionMatches(err, type)
-#define __Pyx_PyErr_GivenExceptionMatches2(err, type1, type2) (PyErr_GivenExceptionMatches(err, type1) || PyErr_GivenExceptionMatches(err, type2))
-#endif
-#define __Pyx_PyException_Check(obj) __Pyx_TypeCheck(obj, PyExc_Exception)
-
-/* GetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
-static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#else
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
 #endif
 
 /* PyErrExceptionMatches.proto */
@@ -1723,6 +1673,30 @@ static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject 
 
 /* HasAttr.proto */
 static CYTHON_INLINE int __Pyx_HasAttr(PyObject *, PyObject *);
+
+/* GetTopmostException.proto */
+#if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
+#endif
+
+/* SaveResetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
+#else
+#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
+#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
+#endif
+
+/* GetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
+#endif
 
 /* PyObject_GenericGetAttrNoDict.proto */
 #if CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP && PY_VERSION_HEX < 0x03070000
@@ -2032,6 +2006,19 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_Py_intptr_t(Py_intptr_t value);
 /* PrintOne.proto */
 static int __Pyx_PrintOne(PyObject* stream, PyObject *o);
 
+/* FastTypeChecks.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+#define __Pyx_TypeCheck(obj, type) __Pyx_IsSubtype(Py_TYPE(obj), (PyTypeObject *)type)
+static CYTHON_INLINE int __Pyx_IsSubtype(PyTypeObject *a, PyTypeObject *b);
+static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches(PyObject *err, PyObject *type);
+static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObject *type1, PyObject *type2);
+#else
+#define __Pyx_TypeCheck(obj, type) PyObject_TypeCheck(obj, (PyTypeObject *)type)
+#define __Pyx_PyErr_GivenExceptionMatches(err, type) PyErr_GivenExceptionMatches(err, type)
+#define __Pyx_PyErr_GivenExceptionMatches2(err, type1, type2) (PyErr_GivenExceptionMatches(err, type1) || PyErr_GivenExceptionMatches(err, type2))
+#endif
+#define __Pyx_PyException_Check(obj) __Pyx_TypeCheck(obj, PyExc_Exception)
+
 /* CStringEquals.proto */
 static CYTHON_INLINE int __Pyx_StrEq(const char *, const char *);
 
@@ -2107,7 +2094,6 @@ static const char __pyx_k_all[] = "all";
 static const char __pyx_k_cox[] = "cox";
 static const char __pyx_k_doc[] = "__doc__";
 static const char __pyx_k_end[] = "end";
-static const char __pyx_k_inf[] = "inf";
 static const char __pyx_k_new[] = "__new__";
 static const char __pyx_k_sum[] = "sum";
 static const char __pyx_k_INFO[] = "INFO";
@@ -2138,7 +2124,6 @@ static const char __pyx_k_design[] = "design";
 static const char __pyx_k_format[] = "format";
 static const char __pyx_k_i_best[] = "i_best";
 static const char __pyx_k_import[] = "__import__";
-static const char __pyx_k_linalg[] = "linalg";
 static const char __pyx_k_module[] = "__module__";
 static const char __pyx_k_n_sets[] = "n_sets";
 static const char __pyx_k_pickle[] = "pickle";
@@ -2169,7 +2154,6 @@ static const char __pyx_k_pyx_result[] = "__pyx_result";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_HaltonDraws[] = "HaltonDraws";
 static const char __pyx_k_ImportError[] = "ImportError";
-static const char __pyx_k_LinAlgError[] = "LinAlgError";
 static const char __pyx_k_PickleError[] = "PickleError";
 static const char __pyx_k_basicConfig[] = "basicConfig";
 static const char __pyx_k_i_new_value[] = "i_new_value";
@@ -2204,8 +2188,8 @@ static const char __pyx_k_design_optimization_log[] = "design_optimization.log";
 static const char __pyx_k_transform_varcov_matrix[] = "transform_varcov_matrix";
 static const char __pyx_k_get_i_optimality_bayesian[] = "get_i_optimality_bayesian";
 static const char __pyx_k_CoordinateExchangeIOptimal[] = "CoordinateExchangeIOptimal";
+static const char __pyx_k_MixtureOptDesign_MNL_utils[] = "MixtureOptDesign.MNL.utils";
 static const char __pyx_k_get_random_initial_design_mnl[] = "get_random_initial_design_mnl";
-static const char __pyx_k_MixtureOptDesign_MNL_mnl_utils[] = "MixtureOptDesign.MNL.mnl_utils";
 static const char __pyx_k_pyx_unpickle_CoordinateExchang[] = "__pyx_unpickle_CoordinateExchangeIOptimal";
 static const char __pyx_k_asctime_s_levelname_s_message_s[] = "%(asctime)s %(levelname)s: %(message)s";
 static const char __pyx_k_numpy_core_multiarray_failed_to[] = "numpy.core.multiarray failed to import";
@@ -2231,12 +2215,11 @@ static PyObject *__pyx_n_s_INFO;
 static PyObject *__pyx_n_s_ImportError;
 static PyObject *__pyx_kp_s_Incompatible_checksums_0x_x_vs_0;
 static PyObject *__pyx_kp_s_Initial_design_s;
-static PyObject *__pyx_n_s_LinAlgError;
 static PyObject *__pyx_n_s_MixtureOptDesign_CoordinateExcha;
 static PyObject *__pyx_n_s_MixtureOptDesign_CoordinateExcha_2;
 static PyObject *__pyx_kp_s_MixtureOptDesign_CoordinateExcha_3;
 static PyObject *__pyx_n_s_MixtureOptDesign_HaltonDraws_hal;
-static PyObject *__pyx_n_s_MixtureOptDesign_MNL_mnl_utils;
+static PyObject *__pyx_n_s_MixtureOptDesign_MNL_utils;
 static PyObject *__pyx_kp_s_Number_of_iterations;
 static PyObject *__pyx_kp_s_Number_of_iterations_s;
 static PyObject *__pyx_kp_s_Original_Optimality_criterion_va;
@@ -2280,7 +2263,6 @@ static PyObject *__pyx_n_s_i_opt_critc_value;
 static PyObject *__pyx_n_s_identity;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_indices;
-static PyObject *__pyx_n_s_inf;
 static PyObject *__pyx_n_s_info;
 static PyObject *__pyx_n_s_it;
 static PyObject *__pyx_n_s_iteration;
@@ -2288,7 +2270,6 @@ static PyObject *__pyx_n_s_j;
 static PyObject *__pyx_n_s_k;
 static PyObject *__pyx_n_s_kappa;
 static PyObject *__pyx_n_s_level;
-static PyObject *__pyx_n_s_linalg;
 static PyObject *__pyx_n_s_logging;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_metaclass;
@@ -3220,7 +3201,7 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   PyObject *__pyx_t_9 = NULL;
   PyObject *__pyx_t_10 = NULL;
   float __pyx_t_11;
-  double __pyx_t_12;
+  int __pyx_t_12;
   int __pyx_t_13;
   int __pyx_t_14;
   int __pyx_t_15;
@@ -3232,15 +3213,14 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   int __pyx_t_21;
   int __pyx_t_22;
   int __pyx_t_23;
-  int __pyx_t_24;
-  PyObject *__pyx_t_25 = NULL;
-  int __pyx_t_26;
-  PyObject *__pyx_t_27 = NULL;
-  PyArrayObject *__pyx_t_28 = NULL;
+  PyObject *__pyx_t_24 = NULL;
+  int __pyx_t_25;
+  PyObject *__pyx_t_26 = NULL;
+  PyArrayObject *__pyx_t_27 = NULL;
+  npy_intp __pyx_t_28;
   npy_intp __pyx_t_29;
-  npy_intp __pyx_t_30;
+  int __pyx_t_30;
   int __pyx_t_31;
-  int __pyx_t_32;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -3414,7 +3394,7 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *         # set up initial optimality value
  *         opt_crit_value_orig = get_i_optimality_bayesian(design, self.order, self.beta)             # <<<<<<<<<<<<<<
  *         i_best = opt_crit_value_orig
- *         i_opt_critc_value = float("inf")
+ *         i_opt_critc_value = 100
  */
   __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_get_i_optimality_bayesian); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -3478,7 +3458,7 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *         # set up initial optimality value
  *         opt_crit_value_orig = get_i_optimality_bayesian(design, self.order, self.beta)
  *         i_best = opt_crit_value_orig             # <<<<<<<<<<<<<<
- *         i_opt_critc_value = float("inf")
+ *         i_opt_critc_value = 100
  * 
  */
   __pyx_v_i_best = __pyx_v_opt_crit_value_orig;
@@ -3486,15 +3466,14 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":95
  *         opt_crit_value_orig = get_i_optimality_bayesian(design, self.order, self.beta)
  *         i_best = opt_crit_value_orig
- *         i_opt_critc_value = float("inf")             # <<<<<<<<<<<<<<
+ *         i_opt_critc_value = 100             # <<<<<<<<<<<<<<
  * 
  *         it = 0
  */
-  __pyx_t_12 = __Pyx_PyObject_AsDouble(__pyx_n_s_inf); if (unlikely(__pyx_t_12 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 95, __pyx_L1_error)
-  __pyx_v_i_opt_critc_value = __pyx_t_12;
+  __pyx_v_i_opt_critc_value = 100.0;
 
   /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":97
- *         i_opt_critc_value = float("inf")
+ *         i_opt_critc_value = 100
  * 
  *         it = 0             # <<<<<<<<<<<<<<
  *         for _ in range(iteration):
@@ -3510,9 +3489,9 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *             # If there was no improvement in this iteration
  */
   __pyx_t_5 = __pyx_v_iteration;
-  __pyx_t_13 = __pyx_t_5;
-  for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
-    __pyx_v__ = __pyx_t_14;
+  __pyx_t_12 = __pyx_t_5;
+  for (__pyx_t_13 = 0; __pyx_t_13 < __pyx_t_12; __pyx_t_13+=1) {
+    __pyx_v__ = __pyx_t_13;
 
     /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":101
  * 
@@ -3521,8 +3500,8 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *                 break
  * 
  */
-    __pyx_t_15 = ((fabsf((__pyx_v_i_opt_critc_value - __pyx_v_i_best)) < 0.01) != 0);
-    if (__pyx_t_15) {
+    __pyx_t_14 = ((fabsf((__pyx_v_i_opt_critc_value - __pyx_v_i_best)) < 0.01) != 0);
+    if (__pyx_t_14) {
 
       /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":102
  *             # If there was no improvement in this iteration
@@ -3567,10 +3546,10 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *                 for s in range(n_choices):
  *                     for q in range(n_ingredients):
  */
-    __pyx_t_16 = __pyx_v_n_sets;
-    __pyx_t_17 = __pyx_t_16;
-    for (__pyx_t_18 = 0; __pyx_t_18 < __pyx_t_17; __pyx_t_18+=1) {
-      __pyx_v_j = __pyx_t_18;
+    __pyx_t_15 = __pyx_v_n_sets;
+    __pyx_t_16 = __pyx_t_15;
+    for (__pyx_t_17 = 0; __pyx_t_17 < __pyx_t_16; __pyx_t_17+=1) {
+      __pyx_v_j = __pyx_t_17;
 
       /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":107
  *             it += 1
@@ -3579,10 +3558,10 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *                     for q in range(n_ingredients):
  *                         cox_directions = compute_cox_direction(design[:, j, s], q, n_points)
  */
-      __pyx_t_19 = __pyx_v_n_choices;
-      __pyx_t_20 = __pyx_t_19;
-      for (__pyx_t_21 = 0; __pyx_t_21 < __pyx_t_20; __pyx_t_21+=1) {
-        __pyx_v_s = __pyx_t_21;
+      __pyx_t_18 = __pyx_v_n_choices;
+      __pyx_t_19 = __pyx_t_18;
+      for (__pyx_t_20 = 0; __pyx_t_20 < __pyx_t_19; __pyx_t_20+=1) {
+        __pyx_v_s = __pyx_t_20;
 
         /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":108
  *             for j in range(n_sets):
@@ -3591,10 +3570,10 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *                         cox_directions = compute_cox_direction(design[:, j, s], q, n_points)
  *                         # Loop through each Cox direction
  */
-        __pyx_t_22 = __pyx_v_n_ingredients;
-        __pyx_t_23 = __pyx_t_22;
-        for (__pyx_t_24 = 0; __pyx_t_24 < __pyx_t_23; __pyx_t_24+=1) {
-          __pyx_v_q = __pyx_t_24;
+        __pyx_t_21 = __pyx_v_n_ingredients;
+        __pyx_t_22 = __pyx_t_21;
+        for (__pyx_t_23 = 0; __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
+          __pyx_v_q = __pyx_t_23;
 
           /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":109
  *                 for s in range(n_choices):
@@ -3627,23 +3606,23 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
           __Pyx_GOTREF(__pyx_t_4);
           __pyx_t_10 = __Pyx_PyInt_From_int(__pyx_v_n_points); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 109, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_10);
-          __pyx_t_25 = NULL;
-          __pyx_t_26 = 0;
+          __pyx_t_24 = NULL;
+          __pyx_t_25 = 0;
           if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
-            __pyx_t_25 = PyMethod_GET_SELF(__pyx_t_2);
-            if (likely(__pyx_t_25)) {
+            __pyx_t_24 = PyMethod_GET_SELF(__pyx_t_2);
+            if (likely(__pyx_t_24)) {
               PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-              __Pyx_INCREF(__pyx_t_25);
+              __Pyx_INCREF(__pyx_t_24);
               __Pyx_INCREF(function);
               __Pyx_DECREF_SET(__pyx_t_2, function);
-              __pyx_t_26 = 1;
+              __pyx_t_25 = 1;
             }
           }
           #if CYTHON_FAST_PYCALL
           if (PyFunction_Check(__pyx_t_2)) {
-            PyObject *__pyx_temp[4] = {__pyx_t_25, __pyx_t_1, __pyx_t_4, __pyx_t_10};
-            __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_26, 3+__pyx_t_26); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 109, __pyx_L1_error)
-            __Pyx_XDECREF(__pyx_t_25); __pyx_t_25 = 0;
+            PyObject *__pyx_temp[4] = {__pyx_t_24, __pyx_t_1, __pyx_t_4, __pyx_t_10};
+            __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_25, 3+__pyx_t_25); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 109, __pyx_L1_error)
+            __Pyx_XDECREF(__pyx_t_24); __pyx_t_24 = 0;
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
             __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -3652,9 +3631,9 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
           #endif
           #if CYTHON_FAST_PYCCALL
           if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
-            PyObject *__pyx_temp[4] = {__pyx_t_25, __pyx_t_1, __pyx_t_4, __pyx_t_10};
-            __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_26, 3+__pyx_t_26); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 109, __pyx_L1_error)
-            __Pyx_XDECREF(__pyx_t_25); __pyx_t_25 = 0;
+            PyObject *__pyx_temp[4] = {__pyx_t_24, __pyx_t_1, __pyx_t_4, __pyx_t_10};
+            __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_25, 3+__pyx_t_25); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 109, __pyx_L1_error)
+            __Pyx_XDECREF(__pyx_t_24); __pyx_t_24 = 0;
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
             __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -3662,32 +3641,32 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
           } else
           #endif
           {
-            __pyx_t_27 = PyTuple_New(3+__pyx_t_26); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 109, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_27);
-            if (__pyx_t_25) {
-              __Pyx_GIVEREF(__pyx_t_25); PyTuple_SET_ITEM(__pyx_t_27, 0, __pyx_t_25); __pyx_t_25 = NULL;
+            __pyx_t_26 = PyTuple_New(3+__pyx_t_25); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 109, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_26);
+            if (__pyx_t_24) {
+              __Pyx_GIVEREF(__pyx_t_24); PyTuple_SET_ITEM(__pyx_t_26, 0, __pyx_t_24); __pyx_t_24 = NULL;
             }
             __Pyx_GIVEREF(__pyx_t_1);
-            PyTuple_SET_ITEM(__pyx_t_27, 0+__pyx_t_26, __pyx_t_1);
+            PyTuple_SET_ITEM(__pyx_t_26, 0+__pyx_t_25, __pyx_t_1);
             __Pyx_GIVEREF(__pyx_t_4);
-            PyTuple_SET_ITEM(__pyx_t_27, 1+__pyx_t_26, __pyx_t_4);
+            PyTuple_SET_ITEM(__pyx_t_26, 1+__pyx_t_25, __pyx_t_4);
             __Pyx_GIVEREF(__pyx_t_10);
-            PyTuple_SET_ITEM(__pyx_t_27, 2+__pyx_t_26, __pyx_t_10);
+            PyTuple_SET_ITEM(__pyx_t_26, 2+__pyx_t_25, __pyx_t_10);
             __pyx_t_1 = 0;
             __pyx_t_4 = 0;
             __pyx_t_10 = 0;
-            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_27, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 109, __pyx_L1_error)
+            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_26, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 109, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_3);
-            __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
+            __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
           }
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 109, __pyx_L1_error)
-          __pyx_t_28 = ((PyArrayObject *)__pyx_t_3);
+          __pyx_t_27 = ((PyArrayObject *)__pyx_t_3);
           {
             __Pyx_BufFmt_StackElem __pyx_stack[1];
             __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_cox_directions.rcbuffer->pybuffer);
-            __pyx_t_26 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cox_directions.rcbuffer->pybuffer, (PyObject*)__pyx_t_28, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack);
-            if (unlikely(__pyx_t_26 < 0)) {
+            __pyx_t_25 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cox_directions.rcbuffer->pybuffer, (PyObject*)__pyx_t_27, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack);
+            if (unlikely(__pyx_t_25 < 0)) {
               PyErr_Fetch(&__pyx_t_9, &__pyx_t_8, &__pyx_t_7);
               if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cox_directions.rcbuffer->pybuffer, (PyObject*)__pyx_v_cox_directions, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {
                 Py_XDECREF(__pyx_t_9); Py_XDECREF(__pyx_t_8); Py_XDECREF(__pyx_t_7);
@@ -3698,9 +3677,9 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
               __pyx_t_9 = __pyx_t_8 = __pyx_t_7 = 0;
             }
             __pyx_pybuffernd_cox_directions.diminfo[0].strides = __pyx_pybuffernd_cox_directions.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_cox_directions.diminfo[0].shape = __pyx_pybuffernd_cox_directions.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_cox_directions.diminfo[1].strides = __pyx_pybuffernd_cox_directions.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_cox_directions.diminfo[1].shape = __pyx_pybuffernd_cox_directions.rcbuffer->pybuffer.shape[1];
-            if (unlikely(__pyx_t_26 < 0)) __PYX_ERR(0, 109, __pyx_L1_error)
+            if (unlikely(__pyx_t_25 < 0)) __PYX_ERR(0, 109, __pyx_L1_error)
           }
-          __pyx_t_28 = 0;
+          __pyx_t_27 = 0;
           __Pyx_XDECREF_SET(__pyx_v_cox_directions, ((PyArrayObject *)__pyx_t_3));
           __pyx_t_3 = 0;
 
@@ -3711,10 +3690,10 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *                             # Create candidate design by copying current design
  *                             candidate_design = design.copy()
  */
-          __pyx_t_29 = (__pyx_v_cox_directions->dimensions[0]);
-          __pyx_t_30 = __pyx_t_29;
-          for (__pyx_t_26 = 0; __pyx_t_26 < __pyx_t_30; __pyx_t_26+=1) {
-            __pyx_v_cox_direction = __pyx_t_26;
+          __pyx_t_28 = (__pyx_v_cox_directions->dimensions[0]);
+          __pyx_t_29 = __pyx_t_28;
+          for (__pyx_t_25 = 0; __pyx_t_25 < __pyx_t_29; __pyx_t_25+=1) {
+            __pyx_v_cox_direction = __pyx_t_25;
 
             /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":113
  *                         for cox_direction in range(cox_directions.shape[0]):
@@ -3725,18 +3704,18 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  */
             __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_design), __pyx_n_s_copy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_27 = NULL;
+            __pyx_t_26 = NULL;
             if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-              __pyx_t_27 = PyMethod_GET_SELF(__pyx_t_2);
-              if (likely(__pyx_t_27)) {
+              __pyx_t_26 = PyMethod_GET_SELF(__pyx_t_2);
+              if (likely(__pyx_t_26)) {
                 PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-                __Pyx_INCREF(__pyx_t_27);
+                __Pyx_INCREF(__pyx_t_26);
                 __Pyx_INCREF(function);
                 __Pyx_DECREF_SET(__pyx_t_2, function);
               }
             }
-            __pyx_t_3 = (__pyx_t_27) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_27) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
-            __Pyx_XDECREF(__pyx_t_27); __pyx_t_27 = 0;
+            __pyx_t_3 = (__pyx_t_26) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_26) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
+            __Pyx_XDECREF(__pyx_t_26); __pyx_t_26 = 0;
             if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 113, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -3745,8 +3724,8 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
             {
               __Pyx_BufFmt_StackElem __pyx_stack[1];
               __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_candidate_design.rcbuffer->pybuffer);
-              __pyx_t_31 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_candidate_design.rcbuffer->pybuffer, (PyObject*)__pyx_t_6, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack);
-              if (unlikely(__pyx_t_31 < 0)) {
+              __pyx_t_30 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_candidate_design.rcbuffer->pybuffer, (PyObject*)__pyx_t_6, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack);
+              if (unlikely(__pyx_t_30 < 0)) {
                 PyErr_Fetch(&__pyx_t_7, &__pyx_t_8, &__pyx_t_9);
                 if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_candidate_design.rcbuffer->pybuffer, (PyObject*)__pyx_v_candidate_design, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack) == -1)) {
                   Py_XDECREF(__pyx_t_7); Py_XDECREF(__pyx_t_8); Py_XDECREF(__pyx_t_9);
@@ -3757,7 +3736,7 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
                 __pyx_t_7 = __pyx_t_8 = __pyx_t_9 = 0;
               }
               __pyx_pybuffernd_candidate_design.diminfo[0].strides = __pyx_pybuffernd_candidate_design.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_candidate_design.diminfo[0].shape = __pyx_pybuffernd_candidate_design.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_candidate_design.diminfo[1].strides = __pyx_pybuffernd_candidate_design.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_candidate_design.diminfo[1].shape = __pyx_pybuffernd_candidate_design.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_candidate_design.diminfo[2].strides = __pyx_pybuffernd_candidate_design.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_candidate_design.diminfo[2].shape = __pyx_pybuffernd_candidate_design.rcbuffer->pybuffer.shape[2];
-              if (unlikely(__pyx_t_31 < 0)) __PYX_ERR(0, 113, __pyx_L1_error)
+              if (unlikely(__pyx_t_30 < 0)) __PYX_ERR(0, 113, __pyx_L1_error)
             }
             __pyx_t_6 = 0;
             __Pyx_XDECREF_SET(__pyx_v_candidate_design, ((PyArrayObject *)__pyx_t_3));
@@ -3767,8 +3746,8 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  *                             candidate_design = design.copy()
  *                             # Replace the current Mixture with the Cox direction
  *                             candidate_design[:, j, s] = cox_directions[cox_direction,:]             # <<<<<<<<<<<<<<
- *                             try:
- *                                 # Compute optimality criterion for candidate design
+ *                             # Compute optimality criterion for candidate design
+ *                             i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)
  */
             __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_cox_direction); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 115, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_3);
@@ -3785,8 +3764,8 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 115, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_27 = __Pyx_PyInt_From_int(__pyx_v_s); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 115, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_27);
+            __pyx_t_26 = __Pyx_PyInt_From_int(__pyx_v_s); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 115, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_26);
             __pyx_t_10 = PyTuple_New(3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 115, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_10);
             __Pyx_INCREF(__pyx_slice_);
@@ -3794,202 +3773,106 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
             PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_slice_);
             __Pyx_GIVEREF(__pyx_t_2);
             PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_t_2);
-            __Pyx_GIVEREF(__pyx_t_27);
-            PyTuple_SET_ITEM(__pyx_t_10, 2, __pyx_t_27);
+            __Pyx_GIVEREF(__pyx_t_26);
+            PyTuple_SET_ITEM(__pyx_t_10, 2, __pyx_t_26);
             __pyx_t_2 = 0;
-            __pyx_t_27 = 0;
+            __pyx_t_26 = 0;
             if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_candidate_design), __pyx_t_10, __pyx_t_3) < 0)) __PYX_ERR(0, 115, __pyx_L1_error)
             __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":116
- *                             # Replace the current Mixture with the Cox direction
+            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":117
  *                             candidate_design[:, j, s] = cox_directions[cox_direction,:]
- *                             try:             # <<<<<<<<<<<<<<
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)
- */
-            {
-              __Pyx_PyThreadState_declare
-              __Pyx_PyThreadState_assign
-              __Pyx_ExceptionSave(&__pyx_t_9, &__pyx_t_8, &__pyx_t_7);
-              __Pyx_XGOTREF(__pyx_t_9);
-              __Pyx_XGOTREF(__pyx_t_8);
-              __Pyx_XGOTREF(__pyx_t_7);
-              /*try:*/ {
-
-                /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":118
- *                             try:
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)             # <<<<<<<<<<<<<<
- *                             except np.linalg.LinAlgError:
- *                                 # Skip to the next Cox direction if a LinAlgError occurs
- */
-                __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_get_i_optimality_bayesian); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 118, __pyx_L14_error)
-                __Pyx_GOTREF(__pyx_t_10);
-                __pyx_t_27 = __Pyx_PyInt_From_int(__pyx_v_self->order); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 118, __pyx_L14_error)
-                __Pyx_GOTREF(__pyx_t_27);
-                __pyx_t_2 = NULL;
-                __pyx_t_31 = 0;
-                if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_10))) {
-                  __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_10);
-                  if (likely(__pyx_t_2)) {
-                    PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_10);
-                    __Pyx_INCREF(__pyx_t_2);
-                    __Pyx_INCREF(function);
-                    __Pyx_DECREF_SET(__pyx_t_10, function);
-                    __pyx_t_31 = 1;
-                  }
-                }
-                #if CYTHON_FAST_PYCALL
-                if (PyFunction_Check(__pyx_t_10)) {
-                  PyObject *__pyx_temp[4] = {__pyx_t_2, ((PyObject *)__pyx_v_candidate_design), __pyx_t_27, ((PyObject *)__pyx_v_self->beta)};
-                  __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_31, 3+__pyx_t_31); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 118, __pyx_L14_error)
-                  __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-                  __Pyx_GOTREF(__pyx_t_3);
-                  __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
-                } else
-                #endif
-                #if CYTHON_FAST_PYCCALL
-                if (__Pyx_PyFastCFunction_Check(__pyx_t_10)) {
-                  PyObject *__pyx_temp[4] = {__pyx_t_2, ((PyObject *)__pyx_v_candidate_design), __pyx_t_27, ((PyObject *)__pyx_v_self->beta)};
-                  __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_31, 3+__pyx_t_31); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 118, __pyx_L14_error)
-                  __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-                  __Pyx_GOTREF(__pyx_t_3);
-                  __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
-                } else
-                #endif
-                {
-                  __pyx_t_4 = PyTuple_New(3+__pyx_t_31); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 118, __pyx_L14_error)
-                  __Pyx_GOTREF(__pyx_t_4);
-                  if (__pyx_t_2) {
-                    __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
-                  }
-                  __Pyx_INCREF(((PyObject *)__pyx_v_candidate_design));
-                  __Pyx_GIVEREF(((PyObject *)__pyx_v_candidate_design));
-                  PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_31, ((PyObject *)__pyx_v_candidate_design));
-                  __Pyx_GIVEREF(__pyx_t_27);
-                  PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_31, __pyx_t_27);
-                  __Pyx_INCREF(((PyObject *)__pyx_v_self->beta));
-                  __Pyx_GIVEREF(((PyObject *)__pyx_v_self->beta));
-                  PyTuple_SET_ITEM(__pyx_t_4, 2+__pyx_t_31, ((PyObject *)__pyx_v_self->beta));
-                  __pyx_t_27 = 0;
-                  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 118, __pyx_L14_error)
-                  __Pyx_GOTREF(__pyx_t_3);
-                  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-                }
-                __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-                __pyx_t_11 = __pyx_PyFloat_AsFloat(__pyx_t_3); if (unlikely((__pyx_t_11 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 118, __pyx_L14_error)
-                __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-                __pyx_v_i_new_value = __pyx_t_11;
-
-                /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":116
- *                             # Replace the current Mixture with the Cox direction
- *                             candidate_design[:, j, s] = cox_directions[cox_direction,:]
- *                             try:             # <<<<<<<<<<<<<<
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)
- */
-              }
-              __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-              __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-              __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-              goto __pyx_L21_try_end;
-              __pyx_L14_error:;
-              __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-              __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-              __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-              __Pyx_XDECREF(__pyx_t_25); __pyx_t_25 = 0;
-              __Pyx_XDECREF(__pyx_t_27); __pyx_t_27 = 0;
-              __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-              __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":119
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)
- *                             except np.linalg.LinAlgError:             # <<<<<<<<<<<<<<
- *                                 # Skip to the next Cox direction if a LinAlgError occurs
- *                                 continue
- */
-              __Pyx_ErrFetch(&__pyx_t_3, &__pyx_t_10, &__pyx_t_4);
-              __Pyx_GetModuleGlobalName(__pyx_t_27, __pyx_n_s_np); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 119, __pyx_L16_except_error)
-              __Pyx_GOTREF(__pyx_t_27);
-              __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_27, __pyx_n_s_linalg); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 119, __pyx_L16_except_error)
-              __Pyx_GOTREF(__pyx_t_2);
-              __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
-              __pyx_t_27 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_LinAlgError); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 119, __pyx_L16_except_error)
-              __Pyx_GOTREF(__pyx_t_27);
-              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-              __pyx_t_31 = __Pyx_PyErr_GivenExceptionMatches(__pyx_t_3, __pyx_t_27);
-              __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
-              __Pyx_ErrRestore(__pyx_t_3, __pyx_t_10, __pyx_t_4);
-              __pyx_t_3 = 0; __pyx_t_10 = 0; __pyx_t_4 = 0;
-              if (__pyx_t_31) {
-                __Pyx_AddTraceback("MixtureOptDesign.CoordinateExchange.coordinate.CoordinateExchangeIOptimal.optimize_design", __pyx_clineno, __pyx_lineno, __pyx_filename);
-                if (__Pyx_GetException(&__pyx_t_4, &__pyx_t_10, &__pyx_t_3) < 0) __PYX_ERR(0, 119, __pyx_L16_except_error)
-                __Pyx_GOTREF(__pyx_t_4);
-                __Pyx_GOTREF(__pyx_t_10);
-                __Pyx_GOTREF(__pyx_t_3);
-
-                /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":121
- *                             except np.linalg.LinAlgError:
- *                                 # Skip to the next Cox direction if a LinAlgError occurs
- *                                 continue             # <<<<<<<<<<<<<<
+ *                             # Compute optimality criterion for candidate design
+ *                             i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)             # <<<<<<<<<<<<<<
  *                             # Update the design and optimality  if there's an improvement
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:
+ *                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.01:
  */
-                goto __pyx_L23_except_continue;
-                __pyx_L23_except_continue:;
-                __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-                __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-                __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-                goto __pyx_L20_try_continue;
+            __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_get_i_optimality_bayesian); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 117, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_10);
+            __pyx_t_26 = __Pyx_PyInt_From_int(__pyx_v_self->order); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 117, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_26);
+            __pyx_t_2 = NULL;
+            __pyx_t_30 = 0;
+            if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_10))) {
+              __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_10);
+              if (likely(__pyx_t_2)) {
+                PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_10);
+                __Pyx_INCREF(__pyx_t_2);
+                __Pyx_INCREF(function);
+                __Pyx_DECREF_SET(__pyx_t_10, function);
+                __pyx_t_30 = 1;
               }
-              goto __pyx_L16_except_error;
-              __pyx_L16_except_error:;
-
-              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":116
- *                             # Replace the current Mixture with the Cox direction
- *                             candidate_design[:, j, s] = cox_directions[cox_direction,:]
- *                             try:             # <<<<<<<<<<<<<<
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)
- */
-              __Pyx_XGIVEREF(__pyx_t_9);
-              __Pyx_XGIVEREF(__pyx_t_8);
-              __Pyx_XGIVEREF(__pyx_t_7);
-              __Pyx_ExceptionReset(__pyx_t_9, __pyx_t_8, __pyx_t_7);
-              goto __pyx_L1_error;
-              __pyx_L20_try_continue:;
-              __Pyx_XGIVEREF(__pyx_t_9);
-              __Pyx_XGIVEREF(__pyx_t_8);
-              __Pyx_XGIVEREF(__pyx_t_7);
-              __Pyx_ExceptionReset(__pyx_t_9, __pyx_t_8, __pyx_t_7);
-              goto __pyx_L12_continue;
-              __pyx_L21_try_end:;
             }
+            #if CYTHON_FAST_PYCALL
+            if (PyFunction_Check(__pyx_t_10)) {
+              PyObject *__pyx_temp[4] = {__pyx_t_2, ((PyObject *)__pyx_v_candidate_design), __pyx_t_26, ((PyObject *)__pyx_v_self->beta)};
+              __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_30, 3+__pyx_t_30); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 117, __pyx_L1_error)
+              __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __Pyx_GOTREF(__pyx_t_3);
+              __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
+            } else
+            #endif
+            #if CYTHON_FAST_PYCCALL
+            if (__Pyx_PyFastCFunction_Check(__pyx_t_10)) {
+              PyObject *__pyx_temp[4] = {__pyx_t_2, ((PyObject *)__pyx_v_candidate_design), __pyx_t_26, ((PyObject *)__pyx_v_self->beta)};
+              __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_30, 3+__pyx_t_30); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 117, __pyx_L1_error)
+              __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __Pyx_GOTREF(__pyx_t_3);
+              __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
+            } else
+            #endif
+            {
+              __pyx_t_4 = PyTuple_New(3+__pyx_t_30); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 117, __pyx_L1_error)
+              __Pyx_GOTREF(__pyx_t_4);
+              if (__pyx_t_2) {
+                __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
+              }
+              __Pyx_INCREF(((PyObject *)__pyx_v_candidate_design));
+              __Pyx_GIVEREF(((PyObject *)__pyx_v_candidate_design));
+              PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_30, ((PyObject *)__pyx_v_candidate_design));
+              __Pyx_GIVEREF(__pyx_t_26);
+              PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_30, __pyx_t_26);
+              __Pyx_INCREF(((PyObject *)__pyx_v_self->beta));
+              __Pyx_GIVEREF(((PyObject *)__pyx_v_self->beta));
+              PyTuple_SET_ITEM(__pyx_t_4, 2+__pyx_t_30, ((PyObject *)__pyx_v_self->beta));
+              __pyx_t_26 = 0;
+              __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 117, __pyx_L1_error)
+              __Pyx_GOTREF(__pyx_t_3);
+              __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+            }
+            __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+            __pyx_t_11 = __pyx_PyFloat_AsFloat(__pyx_t_3); if (unlikely((__pyx_t_11 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 117, __pyx_L1_error)
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+            __pyx_v_i_new_value = __pyx_t_11;
 
-            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":123
- *                                 continue
+            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":119
+ *                             i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)
  *                             # Update the design and optimality  if there's an improvement
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:             # <<<<<<<<<<<<<<
+ *                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.01:             # <<<<<<<<<<<<<<
  *                                 design = candidate_design
  *                                 i_best = i_new_value
  */
-            __pyx_t_32 = ((__pyx_v_i_new_value > 0.0) != 0);
-            if (__pyx_t_32) {
+            __pyx_t_31 = ((__pyx_v_i_new_value != 100.0) != 0);
+            if (__pyx_t_31) {
             } else {
-              __pyx_t_15 = __pyx_t_32;
-              goto __pyx_L25_bool_binop_done;
+              __pyx_t_14 = __pyx_t_31;
+              goto __pyx_L15_bool_binop_done;
             }
-            __pyx_t_32 = (((__pyx_v_i_best - __pyx_v_i_new_value) >= 0.01) != 0);
-            __pyx_t_15 = __pyx_t_32;
-            __pyx_L25_bool_binop_done:;
-            if (__pyx_t_15) {
+            __pyx_t_31 = ((__pyx_v_i_best > __pyx_v_i_new_value) != 0);
+            if (__pyx_t_31) {
+            } else {
+              __pyx_t_14 = __pyx_t_31;
+              goto __pyx_L15_bool_binop_done;
+            }
+            __pyx_t_31 = ((fabsf((__pyx_v_i_best - __pyx_v_i_new_value)) > 0.01) != 0);
+            __pyx_t_14 = __pyx_t_31;
+            __pyx_L15_bool_binop_done:;
+            if (__pyx_t_14) {
 
-              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":124
+              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":120
  *                             # Update the design and optimality  if there's an improvement
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:
+ *                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.01:
  *                                 design = candidate_design             # <<<<<<<<<<<<<<
  *                                 i_best = i_new_value
  * 
@@ -3997,25 +3880,25 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
               {
                 __Pyx_BufFmt_StackElem __pyx_stack[1];
                 __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_design.rcbuffer->pybuffer);
-                __pyx_t_31 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_design.rcbuffer->pybuffer, (PyObject*)__pyx_v_candidate_design, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack);
-                if (unlikely(__pyx_t_31 < 0)) {
-                  PyErr_Fetch(&__pyx_t_7, &__pyx_t_8, &__pyx_t_9);
+                __pyx_t_30 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_design.rcbuffer->pybuffer, (PyObject*)__pyx_v_candidate_design, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack);
+                if (unlikely(__pyx_t_30 < 0)) {
+                  PyErr_Fetch(&__pyx_t_9, &__pyx_t_8, &__pyx_t_7);
                   if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_design.rcbuffer->pybuffer, (PyObject*)__pyx_v_design, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack) == -1)) {
-                    Py_XDECREF(__pyx_t_7); Py_XDECREF(__pyx_t_8); Py_XDECREF(__pyx_t_9);
+                    Py_XDECREF(__pyx_t_9); Py_XDECREF(__pyx_t_8); Py_XDECREF(__pyx_t_7);
                     __Pyx_RaiseBufferFallbackError();
                   } else {
-                    PyErr_Restore(__pyx_t_7, __pyx_t_8, __pyx_t_9);
+                    PyErr_Restore(__pyx_t_9, __pyx_t_8, __pyx_t_7);
                   }
-                  __pyx_t_7 = __pyx_t_8 = __pyx_t_9 = 0;
+                  __pyx_t_9 = __pyx_t_8 = __pyx_t_7 = 0;
                 }
                 __pyx_pybuffernd_design.diminfo[0].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_design.diminfo[0].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_design.diminfo[1].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_design.diminfo[1].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_design.diminfo[2].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_design.diminfo[2].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[2];
-                if (unlikely(__pyx_t_31 < 0)) __PYX_ERR(0, 124, __pyx_L1_error)
+                if (unlikely(__pyx_t_30 < 0)) __PYX_ERR(0, 120, __pyx_L1_error)
               }
               __Pyx_INCREF(((PyObject *)__pyx_v_candidate_design));
               __Pyx_DECREF_SET(__pyx_v_design, __pyx_v_candidate_design);
 
-              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":125
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:
+              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":121
+ *                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.01:
  *                                 design = candidate_design
  *                                 i_best = i_new_value             # <<<<<<<<<<<<<<
  * 
@@ -4023,15 +3906,14 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
  */
               __pyx_v_i_best = __pyx_v_i_new_value;
 
-              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":123
- *                                 continue
+              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":119
+ *                             i_new_value = get_i_optimality_bayesian(candidate_design, self.order, self.beta)
  *                             # Update the design and optimality  if there's an improvement
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:             # <<<<<<<<<<<<<<
+ *                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.01:             # <<<<<<<<<<<<<<
  *                                 design = candidate_design
  *                                 i_best = i_new_value
  */
             }
-            __pyx_L12_continue:;
           }
         }
       }
@@ -4039,48 +3921,48 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   }
   __pyx_L4_break:;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":127
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":123
  *                                 i_best = i_new_value
  * 
  *         logging.basicConfig(filename='design_optimization.log', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')             # <<<<<<<<<<<<<<
  * 
  *         logging.info("Initial design: %s", design_numer[0])
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_logging); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_logging); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_basicConfig); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_basicConfig); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_filename, __pyx_kp_s_design_optimization_log) < 0) __PYX_ERR(0, 127, __pyx_L1_error)
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_logging); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 127, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_filename, __pyx_kp_s_design_optimization_log) < 0) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_logging); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_27 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_INFO); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 127, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_27);
+  __pyx_t_26 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_INFO); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_26);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_level, __pyx_t_27) < 0) __PYX_ERR(0, 127, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_format, __pyx_kp_s_asctime_s_levelname_s_message_s) < 0) __PYX_ERR(0, 127, __pyx_L1_error)
-  __pyx_t_27 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_empty_tuple, __pyx_t_3); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 127, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_27);
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_level, __pyx_t_26) < 0) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_format, __pyx_kp_s_asctime_s_levelname_s_message_s) < 0) __PYX_ERR(0, 123, __pyx_L1_error)
+  __pyx_t_26 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_empty_tuple, __pyx_t_3); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_26);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
+  __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":129
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":125
  *         logging.basicConfig(filename='design_optimization.log', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
  * 
  *         logging.info("Initial design: %s", design_numer[0])             # <<<<<<<<<<<<<<
  *         logging.info("Original optimality criterion value: %s", opt_crit_value_orig)
  *         logging.info("Final optimality criterion value: %s", i_best)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_logging); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_logging); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 125, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_info); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_info); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 125, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_design_numer, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_design_numer, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 125, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -4097,23 +3979,23 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_10)) {
     PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_kp_s_Initial_design_s, __pyx_t_3};
-    __pyx_t_27 = __Pyx_PyFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 129, __pyx_L1_error)
+    __pyx_t_26 = __Pyx_PyFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 125, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GOTREF(__pyx_t_27);
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_10)) {
     PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_kp_s_Initial_design_s, __pyx_t_3};
-    __pyx_t_27 = __Pyx_PyCFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 129, __pyx_L1_error)
+    __pyx_t_26 = __Pyx_PyCFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 125, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GOTREF(__pyx_t_27);
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else
   #endif
   {
-    __pyx_t_2 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 129, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 125, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     if (__pyx_t_4) {
       __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -4124,26 +4006,26 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_2, 1+__pyx_t_5, __pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_27 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_2, NULL); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 129, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_27);
+    __pyx_t_26 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_2, NULL); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 125, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
+  __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":130
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":126
  * 
  *         logging.info("Initial design: %s", design_numer[0])
  *         logging.info("Original optimality criterion value: %s", opt_crit_value_orig)             # <<<<<<<<<<<<<<
  *         logging.info("Final optimality criterion value: %s", i_best)
  *         logging.info("Number of iterations: %s", it)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_logging); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_logging); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_info); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_info); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  __pyx_t_10 = PyFloat_FromDouble(__pyx_v_opt_crit_value_orig); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_10 = PyFloat_FromDouble(__pyx_v_opt_crit_value_orig); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __pyx_t_3 = NULL;
   __pyx_t_5 = 0;
@@ -4160,23 +4042,23 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_kp_s_Original_optimality_criterion_va, __pyx_t_10};
-    __pyx_t_27 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __pyx_t_26 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 126, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_GOTREF(__pyx_t_27);
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_kp_s_Original_optimality_criterion_va, __pyx_t_10};
-    __pyx_t_27 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __pyx_t_26 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 126, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_GOTREF(__pyx_t_27);
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   } else
   #endif
   {
-    __pyx_t_4 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 126, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -4187,26 +4069,26 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
     __Pyx_GIVEREF(__pyx_t_10);
     PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_5, __pyx_t_10);
     __pyx_t_10 = 0;
-    __pyx_t_27 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_27);
+    __pyx_t_26 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 126, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
+  __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":131
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":127
  *         logging.info("Initial design: %s", design_numer[0])
  *         logging.info("Original optimality criterion value: %s", opt_crit_value_orig)
  *         logging.info("Final optimality criterion value: %s", i_best)             # <<<<<<<<<<<<<<
  *         logging.info("Number of iterations: %s", it)
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_logging); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_logging); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_info); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_info); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_i_best); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_i_best); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_10 = NULL;
   __pyx_t_5 = 0;
@@ -4223,23 +4105,23 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_4)) {
     PyObject *__pyx_temp[3] = {__pyx_t_10, __pyx_kp_s_Final_optimality_criterion_value, __pyx_t_2};
-    __pyx_t_27 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __pyx_t_26 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 127, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-    __Pyx_GOTREF(__pyx_t_27);
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
     PyObject *__pyx_temp[3] = {__pyx_t_10, __pyx_kp_s_Final_optimality_criterion_value, __pyx_t_2};
-    __pyx_t_27 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __pyx_t_26 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 127, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-    __Pyx_GOTREF(__pyx_t_27);
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   } else
   #endif
   {
-    __pyx_t_3 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
+    __pyx_t_3 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 127, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     if (__pyx_t_10) {
       __Pyx_GIVEREF(__pyx_t_10); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_10); __pyx_t_10 = NULL;
@@ -4250,26 +4132,26 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
     __Pyx_GIVEREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_3, 1+__pyx_t_5, __pyx_t_2);
     __pyx_t_2 = 0;
-    __pyx_t_27 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, NULL); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 131, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_27);
+    __pyx_t_26 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, NULL); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 127, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
+  __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":132
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":128
  *         logging.info("Original optimality criterion value: %s", opt_crit_value_orig)
  *         logging.info("Final optimality criterion value: %s", i_best)
  *         logging.info("Number of iterations: %s", it)             # <<<<<<<<<<<<<<
  * 
  *         return design
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_logging); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_logging); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_info); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_info); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_it); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_it); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_2 = NULL;
   __pyx_t_5 = 0;
@@ -4286,23 +4168,23 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[3] = {__pyx_t_2, __pyx_kp_s_Number_of_iterations_s, __pyx_t_4};
-    __pyx_t_27 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 132, __pyx_L1_error)
+    __pyx_t_26 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 128, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_GOTREF(__pyx_t_27);
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[3] = {__pyx_t_2, __pyx_kp_s_Number_of_iterations_s, __pyx_t_4};
-    __pyx_t_27 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 132, __pyx_L1_error)
+    __pyx_t_26 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 128, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_GOTREF(__pyx_t_27);
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   } else
   #endif
   {
-    __pyx_t_10 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 132, __pyx_L1_error)
+    __pyx_t_10 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 128, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
     if (__pyx_t_2) {
       __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_2); __pyx_t_2 = NULL;
@@ -4313,14 +4195,14 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_10, 1+__pyx_t_5, __pyx_t_4);
     __pyx_t_4 = 0;
-    __pyx_t_27 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_10, NULL); if (unlikely(!__pyx_t_27)) __PYX_ERR(0, 132, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_27);
+    __pyx_t_26 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_10, NULL); if (unlikely(!__pyx_t_26)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
+  __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":134
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":130
  *         logging.info("Number of iterations: %s", it)
  * 
  *         return design             # <<<<<<<<<<<<<<
@@ -4347,8 +4229,8 @@ static PyArrayObject *__pyx_f_16MixtureOptDesign_18CoordinateExchange_10coordina
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_10);
-  __Pyx_XDECREF(__pyx_t_25);
-  __Pyx_XDECREF(__pyx_t_27);
+  __Pyx_XDECREF(__pyx_t_24);
+  __Pyx_XDECREF(__pyx_t_26);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
@@ -5939,7 +5821,7 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_2
   return __pyx_r;
 }
 
-/* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":139
+/* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":135
  * class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
  * 
  *     def optimize_design(self,design_) -> tuple:             # <<<<<<<<<<<<<<
@@ -5983,11 +5865,11 @@ static PyObject *__pyx_pw_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_design_2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("optimize_design", 1, 2, 2, 1); __PYX_ERR(0, 139, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("optimize_design", 1, 2, 2, 1); __PYX_ERR(0, 135, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "optimize_design") < 0)) __PYX_ERR(0, 139, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "optimize_design") < 0)) __PYX_ERR(0, 135, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -6000,7 +5882,7 @@ static PyObject *__pyx_pw_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("optimize_design", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 139, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("optimize_design", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 135, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("MixtureOptDesign.CoordinateExchange.coordinate.ClusteredCoordinateExchangeIOptimal.optimize_design", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -6051,28 +5933,27 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
   PyObject *__pyx_t_6 = NULL;
   PyObject *__pyx_t_7 = NULL;
   PyObject *__pyx_t_8 = NULL;
-  PyArrayObject *__pyx_t_9 = NULL;
+  PyObject *__pyx_t_9 = NULL;
   PyObject *__pyx_t_10 = NULL;
-  PyObject *__pyx_t_11 = NULL;
+  PyArrayObject *__pyx_t_11 = NULL;
   PyObject *__pyx_t_12 = NULL;
   float __pyx_t_13;
-  double __pyx_t_14;
-  Py_ssize_t __pyx_t_15;
-  PyObject *(*__pyx_t_16)(PyObject *);
-  int __pyx_t_17;
+  Py_ssize_t __pyx_t_14;
+  PyObject *(*__pyx_t_15)(PyObject *);
+  int __pyx_t_16;
+  Py_ssize_t __pyx_t_17;
   Py_ssize_t __pyx_t_18;
   Py_ssize_t __pyx_t_19;
-  Py_ssize_t __pyx_t_20;
+  long __pyx_t_20;
   long __pyx_t_21;
-  long __pyx_t_22;
-  PyObject *__pyx_t_23 = NULL;
-  int __pyx_t_24;
-  PyObject *__pyx_t_25 = NULL;
+  PyObject *__pyx_t_22 = NULL;
+  int __pyx_t_23;
+  PyObject *__pyx_t_24 = NULL;
+  npy_intp __pyx_t_25;
   npy_intp __pyx_t_26;
-  npy_intp __pyx_t_27;
-  int __pyx_t_28;
-  PyObject *__pyx_t_29 = NULL;
-  int __pyx_t_30;
+  int __pyx_t_27;
+  PyObject *__pyx_t_28 = NULL;
+  int __pyx_t_29;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -6090,81 +5971,81 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
   __pyx_pybuffernd_unique_design_points.data = NULL;
   __pyx_pybuffernd_unique_design_points.rcbuffer = &__pyx_pybuffer_unique_design_points;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":147
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":143
  *     """
  *         # define the input parameters
  *         cdef int n_ingredients = self.num_ingredient             # <<<<<<<<<<<<<<
  *         cdef int n_sets = self.num_sets
  *         cdef int n_choices = self.num_choices
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_ingredient); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_ingredient); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 143, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_n_ingredients = __pyx_t_2;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":148
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":144
  *         # define the input parameters
  *         cdef int n_ingredients = self.num_ingredient
  *         cdef int n_sets = self.num_sets             # <<<<<<<<<<<<<<
  *         cdef int n_choices = self.num_choices
  *         cdef int n_points = self.n_points
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_sets); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_sets); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 144, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 148, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 144, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_n_sets = __pyx_t_2;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":149
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":145
  *         cdef int n_ingredients = self.num_ingredient
  *         cdef int n_sets = self.num_sets
  *         cdef int n_choices = self.num_choices             # <<<<<<<<<<<<<<
  *         cdef int n_points = self.n_points
  *         cdef int iteration = self.iteration
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_choices); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_choices); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 145, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 149, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 145, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_n_choices = __pyx_t_2;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":150
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":146
  *         cdef int n_sets = self.num_sets
  *         cdef int n_choices = self.num_choices
  *         cdef int n_points = self.n_points             # <<<<<<<<<<<<<<
  *         cdef int iteration = self.iteration
  *         cdef float opt_crit_value_orig, i_best, i_opt_critc_value, i_new_value
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_n_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 150, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_n_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 146, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 150, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 146, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_n_points = __pyx_t_2;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":151
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":147
  *         cdef int n_choices = self.num_choices
  *         cdef int n_points = self.n_points
  *         cdef int iteration = self.iteration             # <<<<<<<<<<<<<<
  *         cdef float opt_crit_value_orig, i_best, i_opt_critc_value, i_new_value
  *         cdef int j, s, q, cox_direction, it
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_iteration); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_iteration); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 147, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 147, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_iteration = __pyx_t_2;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":160
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":156
  * 
  * 
  *         design = design_[1].copy()             # <<<<<<<<<<<<<<
- *         unique_design_points = unique_rows(design)
+ *         unique_design_points = unique_rows(design.copy())
  * 
  */
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_design_, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 160, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_design_, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_copy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 160, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_copy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -6179,10 +6060,10 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 160, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 156, __pyx_L1_error)
   __pyx_t_5 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
@@ -6199,42 +6080,60 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
       __pyx_t_6 = __pyx_t_7 = __pyx_t_8 = 0;
     }
     __pyx_pybuffernd_design.diminfo[0].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_design.diminfo[0].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_design.diminfo[1].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_design.diminfo[1].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_design.diminfo[2].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_design.diminfo[2].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[2];
-    if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 160, __pyx_L1_error)
+    if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 156, __pyx_L1_error)
   }
   __pyx_t_5 = 0;
   __pyx_v_design = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":161
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":157
  * 
  *         design = design_[1].copy()
- *         unique_design_points = unique_rows(design)             # <<<<<<<<<<<<<<
+ *         unique_design_points = unique_rows(design.copy())             # <<<<<<<<<<<<<<
  * 
  *         # set up initial optimality value
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_unique_rows); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_unique_rows); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = NULL;
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_design), __pyx_n_s_copy); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __pyx_t_10 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_9))) {
+    __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_9);
+    if (likely(__pyx_t_10)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_9);
+      __Pyx_INCREF(__pyx_t_10);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_9, function);
+    }
+  }
+  __pyx_t_3 = (__pyx_t_10) ? __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_t_10) : __Pyx_PyObject_CallNoArg(__pyx_t_9);
+  __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __pyx_t_9 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_4);
-    if (likely(__pyx_t_3)) {
+    __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_4);
+    if (likely(__pyx_t_9)) {
       PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
-      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_9);
       __Pyx_INCREF(function);
       __Pyx_DECREF_SET(__pyx_t_4, function);
     }
   }
-  __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_3, ((PyObject *)__pyx_v_design)) : __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)__pyx_v_design));
-  __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __pyx_t_1 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_9, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 161, __pyx_L1_error)
-  __pyx_t_9 = ((PyArrayObject *)__pyx_t_1);
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 157, __pyx_L1_error)
+  __pyx_t_11 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_unique_design_points.rcbuffer->pybuffer);
-    __pyx_t_2 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_unique_design_points.rcbuffer->pybuffer, (PyObject*)__pyx_t_9, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack);
+    __pyx_t_2 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_unique_design_points.rcbuffer->pybuffer, (PyObject*)__pyx_t_11, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack);
     if (unlikely(__pyx_t_2 < 0)) {
       PyErr_Fetch(&__pyx_t_8, &__pyx_t_7, &__pyx_t_6);
       if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_unique_design_points.rcbuffer->pybuffer, (PyObject*)__pyx_v_unique_design_points, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {
@@ -6246,32 +6145,32 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
       __pyx_t_8 = __pyx_t_7 = __pyx_t_6 = 0;
     }
     __pyx_pybuffernd_unique_design_points.diminfo[0].strides = __pyx_pybuffernd_unique_design_points.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_unique_design_points.diminfo[0].shape = __pyx_pybuffernd_unique_design_points.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_unique_design_points.diminfo[1].strides = __pyx_pybuffernd_unique_design_points.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_unique_design_points.diminfo[1].shape = __pyx_pybuffernd_unique_design_points.rcbuffer->pybuffer.shape[1];
-    if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 161, __pyx_L1_error)
+    if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 157, __pyx_L1_error)
   }
-  __pyx_t_9 = 0;
+  __pyx_t_11 = 0;
   __pyx_v_unique_design_points = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":164
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":160
  * 
  *         # set up initial optimality value
  *         opt_crit_value_orig = get_i_optimality_bayesian(design,self.order,self.beta)             # <<<<<<<<<<<<<<
  *         i_best = opt_crit_value_orig
- *         i_opt_critc_value = float("inf")
+ *         i_opt_critc_value = 100
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_get_i_optimality_bayesian); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 164, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_get_i_optimality_bayesian); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_order); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 164, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_order); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_beta); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 164, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_10);
-  __pyx_t_11 = NULL;
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_beta); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 160, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __pyx_t_10 = NULL;
   __pyx_t_2 = 0;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
-    __pyx_t_11 = PyMethod_GET_SELF(__pyx_t_4);
-    if (likely(__pyx_t_11)) {
+    __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_4);
+    if (likely(__pyx_t_10)) {
       PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
-      __Pyx_INCREF(__pyx_t_11);
+      __Pyx_INCREF(__pyx_t_10);
       __Pyx_INCREF(function);
       __Pyx_DECREF_SET(__pyx_t_4, function);
       __pyx_t_2 = 1;
@@ -6279,68 +6178,67 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
   }
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_4)) {
-    PyObject *__pyx_temp[4] = {__pyx_t_11, ((PyObject *)__pyx_v_design), __pyx_t_3, __pyx_t_10};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_2, 3+__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
+    PyObject *__pyx_temp[4] = {__pyx_t_10, ((PyObject *)__pyx_v_design), __pyx_t_3, __pyx_t_9};
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_2, 3+__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
-    PyObject *__pyx_temp[4] = {__pyx_t_11, ((PyObject *)__pyx_v_design), __pyx_t_3, __pyx_t_10};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_2, 3+__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
+    PyObject *__pyx_temp[4] = {__pyx_t_10, ((PyObject *)__pyx_v_design), __pyx_t_3, __pyx_t_9};
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_2, 3+__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   } else
   #endif
   {
-    __pyx_t_12 = PyTuple_New(3+__pyx_t_2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_12 = PyTuple_New(3+__pyx_t_2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 160, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
-    if (__pyx_t_11) {
-      __Pyx_GIVEREF(__pyx_t_11); PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_11); __pyx_t_11 = NULL;
+    if (__pyx_t_10) {
+      __Pyx_GIVEREF(__pyx_t_10); PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_10); __pyx_t_10 = NULL;
     }
     __Pyx_INCREF(((PyObject *)__pyx_v_design));
     __Pyx_GIVEREF(((PyObject *)__pyx_v_design));
     PyTuple_SET_ITEM(__pyx_t_12, 0+__pyx_t_2, ((PyObject *)__pyx_v_design));
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_12, 1+__pyx_t_2, __pyx_t_3);
-    __Pyx_GIVEREF(__pyx_t_10);
-    PyTuple_SET_ITEM(__pyx_t_12, 2+__pyx_t_2, __pyx_t_10);
+    __Pyx_GIVEREF(__pyx_t_9);
+    PyTuple_SET_ITEM(__pyx_t_12, 2+__pyx_t_2, __pyx_t_9);
     __pyx_t_3 = 0;
-    __pyx_t_10 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_9 = 0;
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_13 = __pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_13 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 164, __pyx_L1_error)
+  __pyx_t_13 = __pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_13 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 160, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_opt_crit_value_orig = __pyx_t_13;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":165
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":161
  *         # set up initial optimality value
  *         opt_crit_value_orig = get_i_optimality_bayesian(design,self.order,self.beta)
  *         i_best = opt_crit_value_orig             # <<<<<<<<<<<<<<
- *         i_opt_critc_value = float("inf")
+ *         i_opt_critc_value = 100
  * 
  */
   __pyx_v_i_best = __pyx_v_opt_crit_value_orig;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":166
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":162
  *         opt_crit_value_orig = get_i_optimality_bayesian(design,self.order,self.beta)
  *         i_best = opt_crit_value_orig
- *         i_opt_critc_value = float("inf")             # <<<<<<<<<<<<<<
+ *         i_opt_critc_value = 100             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_14 = __Pyx_PyObject_AsDouble(__pyx_n_s_inf); if (unlikely(__pyx_t_14 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 166, __pyx_L1_error)
-  __pyx_v_i_opt_critc_value = __pyx_t_14;
+  __pyx_v_i_opt_critc_value = 100.0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":169
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":165
  * 
  * 
  *         it = 0             # <<<<<<<<<<<<<<
@@ -6349,53 +6247,53 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
  */
   __pyx_v_it = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":170
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":166
  * 
  *         it = 0
  *         for _ in range(self.iteration):             # <<<<<<<<<<<<<<
  *             # If there was no improvement in this iteration
- *             if abs(i_opt_critc_value - i_best) < 0.01:
+ *             if abs(i_opt_critc_value - i_best) < 0.001:
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_iteration); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_iteration); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 166, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (likely(PyList_CheckExact(__pyx_t_4)) || PyTuple_CheckExact(__pyx_t_4)) {
-    __pyx_t_1 = __pyx_t_4; __Pyx_INCREF(__pyx_t_1); __pyx_t_15 = 0;
-    __pyx_t_16 = NULL;
+    __pyx_t_1 = __pyx_t_4; __Pyx_INCREF(__pyx_t_1); __pyx_t_14 = 0;
+    __pyx_t_15 = NULL;
   } else {
-    __pyx_t_15 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 170, __pyx_L1_error)
+    __pyx_t_14 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 166, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_16 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 170, __pyx_L1_error)
+    __pyx_t_15 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 166, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   for (;;) {
-    if (likely(!__pyx_t_16)) {
+    if (likely(!__pyx_t_15)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
-        if (__pyx_t_15 >= PyList_GET_SIZE(__pyx_t_1)) break;
+        if (__pyx_t_14 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_15); __Pyx_INCREF(__pyx_t_4); __pyx_t_15++; if (unlikely(0 < 0)) __PYX_ERR(0, 170, __pyx_L1_error)
+        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_14); __Pyx_INCREF(__pyx_t_4); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 166, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_15); __pyx_t_15++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 170, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       } else {
-        if (__pyx_t_15 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
+        if (__pyx_t_14 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_15); __Pyx_INCREF(__pyx_t_4); __pyx_t_15++; if (unlikely(0 < 0)) __PYX_ERR(0, 170, __pyx_L1_error)
+        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_14); __Pyx_INCREF(__pyx_t_4); __pyx_t_14++; if (unlikely(0 < 0)) __PYX_ERR(0, 166, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_15); __pyx_t_15++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 170, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_14); __pyx_t_14++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       }
     } else {
-      __pyx_t_4 = __pyx_t_16(__pyx_t_1);
+      __pyx_t_4 = __pyx_t_15(__pyx_t_1);
       if (unlikely(!__pyx_t_4)) {
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 170, __pyx_L1_error)
+          else __PYX_ERR(0, 166, __pyx_L1_error)
         }
         break;
       }
@@ -6404,35 +6302,35 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
     __Pyx_XDECREF_SET(__pyx_v__, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":172
+    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":168
  *         for _ in range(self.iteration):
  *             # If there was no improvement in this iteration
- *             if abs(i_opt_critc_value - i_best) < 0.01:             # <<<<<<<<<<<<<<
+ *             if abs(i_opt_critc_value - i_best) < 0.001:             # <<<<<<<<<<<<<<
  *                 break
  * 
  */
-    __pyx_t_17 = ((fabsf((__pyx_v_i_opt_critc_value - __pyx_v_i_best)) < 0.01) != 0);
-    if (__pyx_t_17) {
+    __pyx_t_16 = ((fabsf((__pyx_v_i_opt_critc_value - __pyx_v_i_best)) < 0.001) != 0);
+    if (__pyx_t_16) {
 
-      /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":173
+      /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":169
  *             # If there was no improvement in this iteration
- *             if abs(i_opt_critc_value - i_best) < 0.01:
+ *             if abs(i_opt_critc_value - i_best) < 0.001:
  *                 break             # <<<<<<<<<<<<<<
  * 
  *             i_opt_critc_value = i_best
  */
       goto __pyx_L4_break;
 
-      /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":172
+      /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":168
  *         for _ in range(self.iteration):
  *             # If there was no improvement in this iteration
- *             if abs(i_opt_critc_value - i_best) < 0.01:             # <<<<<<<<<<<<<<
+ *             if abs(i_opt_critc_value - i_best) < 0.001:             # <<<<<<<<<<<<<<
  *                 break
  * 
  */
     }
 
-    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":175
+    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":171
  *                 break
  * 
  *             i_opt_critc_value = i_best             # <<<<<<<<<<<<<<
@@ -6441,7 +6339,7 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
  */
     __pyx_v_i_opt_critc_value = __pyx_v_i_best;
 
-    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":176
+    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":172
  * 
  *             i_opt_critc_value = i_best
  *             it += 1             # <<<<<<<<<<<<<<
@@ -6450,109 +6348,109 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
  */
     __pyx_v_it = (__pyx_v_it + 1);
 
-    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":177
+    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":173
  *             i_opt_critc_value = i_best
  *             it += 1
  *             for i in range(len(unique_design_points)):             # <<<<<<<<<<<<<<
  * 
  *                     for q in range(self.num_ingredient):
  */
-    __pyx_t_18 = PyObject_Length(((PyObject *)__pyx_v_unique_design_points)); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 177, __pyx_L1_error)
-    __pyx_t_19 = __pyx_t_18;
-    for (__pyx_t_20 = 0; __pyx_t_20 < __pyx_t_19; __pyx_t_20+=1) {
-      __pyx_v_i = __pyx_t_20;
+    __pyx_t_17 = PyObject_Length(((PyObject *)__pyx_v_unique_design_points)); if (unlikely(__pyx_t_17 == ((Py_ssize_t)-1))) __PYX_ERR(0, 173, __pyx_L1_error)
+    __pyx_t_18 = __pyx_t_17;
+    for (__pyx_t_19 = 0; __pyx_t_19 < __pyx_t_18; __pyx_t_19+=1) {
+      __pyx_v_i = __pyx_t_19;
 
-      /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":179
+      /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":175
  *             for i in range(len(unique_design_points)):
  * 
  *                     for q in range(self.num_ingredient):             # <<<<<<<<<<<<<<
  *                         cox_directions = compute_cox_direction(unique_design_points[i], q, self.n_points)
  *                         # Loop through each Cox direction
  */
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_ingredient); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 179, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_ingredient); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 175, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_21 = __Pyx_PyInt_As_long(__pyx_t_4); if (unlikely((__pyx_t_21 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 179, __pyx_L1_error)
+      __pyx_t_20 = __Pyx_PyInt_As_long(__pyx_t_4); if (unlikely((__pyx_t_20 == (long)-1) && PyErr_Occurred())) __PYX_ERR(0, 175, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_22 = __pyx_t_21;
-      for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_22; __pyx_t_2+=1) {
+      __pyx_t_21 = __pyx_t_20;
+      for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_21; __pyx_t_2+=1) {
         __pyx_v_q = __pyx_t_2;
 
-        /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":180
+        /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":176
  * 
  *                     for q in range(self.num_ingredient):
  *                         cox_directions = compute_cox_direction(unique_design_points[i], q, self.n_points)             # <<<<<<<<<<<<<<
  *                         # Loop through each Cox direction
  *                         for cox_direction in range(cox_directions.shape[0]):
  */
-        __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_compute_cox_direction); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 180, __pyx_L1_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_compute_cox_direction); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 176, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_12);
-        __pyx_t_10 = __Pyx_GetItemInt(((PyObject *)__pyx_v_unique_design_points), __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 180, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_10);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_q); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 180, __pyx_L1_error)
+        __pyx_t_9 = __Pyx_GetItemInt(((PyObject *)__pyx_v_unique_design_points), __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 176, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_9);
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_q); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 176, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_n_points); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 180, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_11);
-        __pyx_t_23 = NULL;
-        __pyx_t_24 = 0;
+        __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_n_points); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 176, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_10);
+        __pyx_t_22 = NULL;
+        __pyx_t_23 = 0;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_12))) {
-          __pyx_t_23 = PyMethod_GET_SELF(__pyx_t_12);
-          if (likely(__pyx_t_23)) {
+          __pyx_t_22 = PyMethod_GET_SELF(__pyx_t_12);
+          if (likely(__pyx_t_22)) {
             PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_12);
-            __Pyx_INCREF(__pyx_t_23);
+            __Pyx_INCREF(__pyx_t_22);
             __Pyx_INCREF(function);
             __Pyx_DECREF_SET(__pyx_t_12, function);
-            __pyx_t_24 = 1;
+            __pyx_t_23 = 1;
           }
         }
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_12)) {
-          PyObject *__pyx_temp[4] = {__pyx_t_23, __pyx_t_10, __pyx_t_3, __pyx_t_11};
-          __pyx_t_4 = __Pyx_PyFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_24, 3+__pyx_t_24); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 180, __pyx_L1_error)
-          __Pyx_XDECREF(__pyx_t_23); __pyx_t_23 = 0;
+          PyObject *__pyx_temp[4] = {__pyx_t_22, __pyx_t_9, __pyx_t_3, __pyx_t_10};
+          __pyx_t_4 = __Pyx_PyFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_23, 3+__pyx_t_23); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 176, __pyx_L1_error)
+          __Pyx_XDECREF(__pyx_t_22); __pyx_t_22 = 0;
           __Pyx_GOTREF(__pyx_t_4);
-          __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+          __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
         } else
         #endif
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_12)) {
-          PyObject *__pyx_temp[4] = {__pyx_t_23, __pyx_t_10, __pyx_t_3, __pyx_t_11};
-          __pyx_t_4 = __Pyx_PyCFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_24, 3+__pyx_t_24); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 180, __pyx_L1_error)
-          __Pyx_XDECREF(__pyx_t_23); __pyx_t_23 = 0;
+          PyObject *__pyx_temp[4] = {__pyx_t_22, __pyx_t_9, __pyx_t_3, __pyx_t_10};
+          __pyx_t_4 = __Pyx_PyCFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_23, 3+__pyx_t_23); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 176, __pyx_L1_error)
+          __Pyx_XDECREF(__pyx_t_22); __pyx_t_22 = 0;
           __Pyx_GOTREF(__pyx_t_4);
-          __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+          __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
         } else
         #endif
         {
-          __pyx_t_25 = PyTuple_New(3+__pyx_t_24); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 180, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_25);
-          if (__pyx_t_23) {
-            __Pyx_GIVEREF(__pyx_t_23); PyTuple_SET_ITEM(__pyx_t_25, 0, __pyx_t_23); __pyx_t_23 = NULL;
+          __pyx_t_24 = PyTuple_New(3+__pyx_t_23); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 176, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
+          if (__pyx_t_22) {
+            __Pyx_GIVEREF(__pyx_t_22); PyTuple_SET_ITEM(__pyx_t_24, 0, __pyx_t_22); __pyx_t_22 = NULL;
           }
-          __Pyx_GIVEREF(__pyx_t_10);
-          PyTuple_SET_ITEM(__pyx_t_25, 0+__pyx_t_24, __pyx_t_10);
+          __Pyx_GIVEREF(__pyx_t_9);
+          PyTuple_SET_ITEM(__pyx_t_24, 0+__pyx_t_23, __pyx_t_9);
           __Pyx_GIVEREF(__pyx_t_3);
-          PyTuple_SET_ITEM(__pyx_t_25, 1+__pyx_t_24, __pyx_t_3);
-          __Pyx_GIVEREF(__pyx_t_11);
-          PyTuple_SET_ITEM(__pyx_t_25, 2+__pyx_t_24, __pyx_t_11);
-          __pyx_t_10 = 0;
+          PyTuple_SET_ITEM(__pyx_t_24, 1+__pyx_t_23, __pyx_t_3);
+          __Pyx_GIVEREF(__pyx_t_10);
+          PyTuple_SET_ITEM(__pyx_t_24, 2+__pyx_t_23, __pyx_t_10);
+          __pyx_t_9 = 0;
           __pyx_t_3 = 0;
-          __pyx_t_11 = 0;
-          __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_25, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 180, __pyx_L1_error)
+          __pyx_t_10 = 0;
+          __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_24, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 176, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
+          __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
         }
         __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-        if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 180, __pyx_L1_error)
-        __pyx_t_9 = ((PyArrayObject *)__pyx_t_4);
+        if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 176, __pyx_L1_error)
+        __pyx_t_11 = ((PyArrayObject *)__pyx_t_4);
         {
           __Pyx_BufFmt_StackElem __pyx_stack[1];
           __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_cox_directions.rcbuffer->pybuffer);
-          __pyx_t_24 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cox_directions.rcbuffer->pybuffer, (PyObject*)__pyx_t_9, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack);
-          if (unlikely(__pyx_t_24 < 0)) {
+          __pyx_t_23 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cox_directions.rcbuffer->pybuffer, (PyObject*)__pyx_t_11, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack);
+          if (unlikely(__pyx_t_23 < 0)) {
             PyErr_Fetch(&__pyx_t_6, &__pyx_t_7, &__pyx_t_8);
             if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cox_directions.rcbuffer->pybuffer, (PyObject*)__pyx_v_cox_directions, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {
               Py_XDECREF(__pyx_t_6); Py_XDECREF(__pyx_t_7); Py_XDECREF(__pyx_t_8);
@@ -6563,278 +6461,278 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
             __pyx_t_6 = __pyx_t_7 = __pyx_t_8 = 0;
           }
           __pyx_pybuffernd_cox_directions.diminfo[0].strides = __pyx_pybuffernd_cox_directions.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_cox_directions.diminfo[0].shape = __pyx_pybuffernd_cox_directions.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_cox_directions.diminfo[1].strides = __pyx_pybuffernd_cox_directions.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_cox_directions.diminfo[1].shape = __pyx_pybuffernd_cox_directions.rcbuffer->pybuffer.shape[1];
-          if (unlikely(__pyx_t_24 < 0)) __PYX_ERR(0, 180, __pyx_L1_error)
+          if (unlikely(__pyx_t_23 < 0)) __PYX_ERR(0, 176, __pyx_L1_error)
         }
-        __pyx_t_9 = 0;
+        __pyx_t_11 = 0;
         __Pyx_XDECREF_SET(__pyx_v_cox_directions, ((PyArrayObject *)__pyx_t_4));
         __pyx_t_4 = 0;
 
-        /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":182
+        /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":178
  *                         cox_directions = compute_cox_direction(unique_design_points[i], q, self.n_points)
  *                         # Loop through each Cox direction
  *                         for cox_direction in range(cox_directions.shape[0]):             # <<<<<<<<<<<<<<
  *                             # Create candidate design by copying current design
  *                             canditate_design = design.copy()
  */
-        __pyx_t_26 = (__pyx_v_cox_directions->dimensions[0]);
-        __pyx_t_27 = __pyx_t_26;
-        for (__pyx_t_24 = 0; __pyx_t_24 < __pyx_t_27; __pyx_t_24+=1) {
-          __pyx_v_cox_direction = __pyx_t_24;
+        __pyx_t_25 = (__pyx_v_cox_directions->dimensions[0]);
+        __pyx_t_26 = __pyx_t_25;
+        for (__pyx_t_23 = 0; __pyx_t_23 < __pyx_t_26; __pyx_t_23+=1) {
+          __pyx_v_cox_direction = __pyx_t_23;
 
-          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":184
+          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":180
  *                         for cox_direction in range(cox_directions.shape[0]):
  *                             # Create candidate design by copying current design
  *                             canditate_design = design.copy()             # <<<<<<<<<<<<<<
  *                             indices = np.where(np.all(canditate_design == unique_design_points[i].reshape(self.num_ingredient,1,1), axis=0))
  *                             subset = canditate_design[:,indices[0],indices[1]].shape
  */
-          __pyx_t_12 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_design), __pyx_n_s_copy); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 184, __pyx_L1_error)
+          __pyx_t_12 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_design), __pyx_n_s_copy); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 180, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_12);
-          __pyx_t_25 = NULL;
+          __pyx_t_24 = NULL;
           if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_12))) {
-            __pyx_t_25 = PyMethod_GET_SELF(__pyx_t_12);
-            if (likely(__pyx_t_25)) {
+            __pyx_t_24 = PyMethod_GET_SELF(__pyx_t_12);
+            if (likely(__pyx_t_24)) {
               PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_12);
-              __Pyx_INCREF(__pyx_t_25);
+              __Pyx_INCREF(__pyx_t_24);
               __Pyx_INCREF(function);
               __Pyx_DECREF_SET(__pyx_t_12, function);
             }
           }
-          __pyx_t_4 = (__pyx_t_25) ? __Pyx_PyObject_CallOneArg(__pyx_t_12, __pyx_t_25) : __Pyx_PyObject_CallNoArg(__pyx_t_12);
-          __Pyx_XDECREF(__pyx_t_25); __pyx_t_25 = 0;
-          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 184, __pyx_L1_error)
+          __pyx_t_4 = (__pyx_t_24) ? __Pyx_PyObject_CallOneArg(__pyx_t_12, __pyx_t_24) : __Pyx_PyObject_CallNoArg(__pyx_t_12);
+          __Pyx_XDECREF(__pyx_t_24); __pyx_t_24 = 0;
+          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 180, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
           __Pyx_XDECREF_SET(__pyx_v_canditate_design, __pyx_t_4);
           __pyx_t_4 = 0;
 
-          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":185
+          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":181
  *                             # Create candidate design by copying current design
  *                             canditate_design = design.copy()
  *                             indices = np.where(np.all(canditate_design == unique_design_points[i].reshape(self.num_ingredient,1,1), axis=0))             # <<<<<<<<<<<<<<
  *                             subset = canditate_design[:,indices[0],indices[1]].shape
  *                             cox = cox_directions[cox_direction,:].reshape(self.num_ingredient,1,1)
  */
-          __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_np); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_np); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 181, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_12);
-          __pyx_t_25 = __Pyx_PyObject_GetAttrStr(__pyx_t_12, __pyx_n_s_where); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 185, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_25);
+          __pyx_t_24 = __Pyx_PyObject_GetAttrStr(__pyx_t_12, __pyx_n_s_where); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 181, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
           __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-          __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_np); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_np); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 181, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_12);
-          __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_t_12, __pyx_n_s_all); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 185, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_11);
-          __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-          __pyx_t_3 = __Pyx_GetItemInt(((PyObject *)__pyx_v_unique_design_points), __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 185, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_3);
-          __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_reshape); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_12, __pyx_n_s_all); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 181, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_10);
-          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_ingredient); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+          __pyx_t_3 = __Pyx_GetItemInt(((PyObject *)__pyx_v_unique_design_points), __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 181, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
-          __pyx_t_23 = NULL;
-          __pyx_t_28 = 0;
-          if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_10))) {
-            __pyx_t_23 = PyMethod_GET_SELF(__pyx_t_10);
-            if (likely(__pyx_t_23)) {
-              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_10);
-              __Pyx_INCREF(__pyx_t_23);
+          __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_reshape); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 181, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_9);
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+          __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_ingredient); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 181, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_3);
+          __pyx_t_22 = NULL;
+          __pyx_t_27 = 0;
+          if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_9))) {
+            __pyx_t_22 = PyMethod_GET_SELF(__pyx_t_9);
+            if (likely(__pyx_t_22)) {
+              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_9);
+              __Pyx_INCREF(__pyx_t_22);
               __Pyx_INCREF(function);
-              __Pyx_DECREF_SET(__pyx_t_10, function);
-              __pyx_t_28 = 1;
+              __Pyx_DECREF_SET(__pyx_t_9, function);
+              __pyx_t_27 = 1;
             }
           }
           #if CYTHON_FAST_PYCALL
-          if (PyFunction_Check(__pyx_t_10)) {
-            PyObject *__pyx_temp[4] = {__pyx_t_23, __pyx_t_3, __pyx_int_1, __pyx_int_1};
-            __pyx_t_12 = __Pyx_PyFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_28, 3+__pyx_t_28); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
-            __Pyx_XDECREF(__pyx_t_23); __pyx_t_23 = 0;
+          if (PyFunction_Check(__pyx_t_9)) {
+            PyObject *__pyx_temp[4] = {__pyx_t_22, __pyx_t_3, __pyx_int_1, __pyx_int_1};
+            __pyx_t_12 = __Pyx_PyFunction_FastCall(__pyx_t_9, __pyx_temp+1-__pyx_t_27, 3+__pyx_t_27); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 181, __pyx_L1_error)
+            __Pyx_XDECREF(__pyx_t_22); __pyx_t_22 = 0;
             __Pyx_GOTREF(__pyx_t_12);
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
           } else
           #endif
           #if CYTHON_FAST_PYCCALL
-          if (__Pyx_PyFastCFunction_Check(__pyx_t_10)) {
-            PyObject *__pyx_temp[4] = {__pyx_t_23, __pyx_t_3, __pyx_int_1, __pyx_int_1};
-            __pyx_t_12 = __Pyx_PyCFunction_FastCall(__pyx_t_10, __pyx_temp+1-__pyx_t_28, 3+__pyx_t_28); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
-            __Pyx_XDECREF(__pyx_t_23); __pyx_t_23 = 0;
+          if (__Pyx_PyFastCFunction_Check(__pyx_t_9)) {
+            PyObject *__pyx_temp[4] = {__pyx_t_22, __pyx_t_3, __pyx_int_1, __pyx_int_1};
+            __pyx_t_12 = __Pyx_PyCFunction_FastCall(__pyx_t_9, __pyx_temp+1-__pyx_t_27, 3+__pyx_t_27); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 181, __pyx_L1_error)
+            __Pyx_XDECREF(__pyx_t_22); __pyx_t_22 = 0;
             __Pyx_GOTREF(__pyx_t_12);
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
           } else
           #endif
           {
-            __pyx_t_29 = PyTuple_New(3+__pyx_t_28); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 185, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_29);
-            if (__pyx_t_23) {
-              __Pyx_GIVEREF(__pyx_t_23); PyTuple_SET_ITEM(__pyx_t_29, 0, __pyx_t_23); __pyx_t_23 = NULL;
+            __pyx_t_28 = PyTuple_New(3+__pyx_t_27); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 181, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_28);
+            if (__pyx_t_22) {
+              __Pyx_GIVEREF(__pyx_t_22); PyTuple_SET_ITEM(__pyx_t_28, 0, __pyx_t_22); __pyx_t_22 = NULL;
             }
             __Pyx_GIVEREF(__pyx_t_3);
-            PyTuple_SET_ITEM(__pyx_t_29, 0+__pyx_t_28, __pyx_t_3);
+            PyTuple_SET_ITEM(__pyx_t_28, 0+__pyx_t_27, __pyx_t_3);
             __Pyx_INCREF(__pyx_int_1);
             __Pyx_GIVEREF(__pyx_int_1);
-            PyTuple_SET_ITEM(__pyx_t_29, 1+__pyx_t_28, __pyx_int_1);
+            PyTuple_SET_ITEM(__pyx_t_28, 1+__pyx_t_27, __pyx_int_1);
             __Pyx_INCREF(__pyx_int_1);
             __Pyx_GIVEREF(__pyx_int_1);
-            PyTuple_SET_ITEM(__pyx_t_29, 2+__pyx_t_28, __pyx_int_1);
+            PyTuple_SET_ITEM(__pyx_t_28, 2+__pyx_t_27, __pyx_int_1);
             __pyx_t_3 = 0;
-            __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_29, NULL); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
+            __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_28, NULL); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 181, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_12);
-            __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
+            __Pyx_DECREF(__pyx_t_28); __pyx_t_28 = 0;
           }
-          __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-          __pyx_t_10 = PyObject_RichCompare(__pyx_v_canditate_design, __pyx_t_12, Py_EQ); __Pyx_XGOTREF(__pyx_t_10); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __pyx_t_9 = PyObject_RichCompare(__pyx_v_canditate_design, __pyx_t_12, Py_EQ); __Pyx_XGOTREF(__pyx_t_9); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 181, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-          __pyx_t_12 = PyTuple_New(1); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __pyx_t_12 = PyTuple_New(1); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 181, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_12);
-          __Pyx_GIVEREF(__pyx_t_10);
-          PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_10);
-          __pyx_t_10 = 0;
-          __pyx_t_10 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 185, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_10);
-          if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_axis, __pyx_int_0) < 0) __PYX_ERR(0, 185, __pyx_L1_error)
-          __pyx_t_29 = __Pyx_PyObject_Call(__pyx_t_11, __pyx_t_12, __pyx_t_10); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 185, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_29);
-          __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-          __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+          __Pyx_GIVEREF(__pyx_t_9);
+          PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_9);
+          __pyx_t_9 = 0;
+          __pyx_t_9 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 181, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_9);
+          if (PyDict_SetItem(__pyx_t_9, __pyx_n_s_axis, __pyx_int_0) < 0) __PYX_ERR(0, 181, __pyx_L1_error)
+          __pyx_t_28 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_12, __pyx_t_9); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 181, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_28);
           __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-          __pyx_t_10 = NULL;
-          if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_25))) {
-            __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_25);
-            if (likely(__pyx_t_10)) {
-              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_25);
-              __Pyx_INCREF(__pyx_t_10);
+          __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __pyx_t_9 = NULL;
+          if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_24))) {
+            __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_24);
+            if (likely(__pyx_t_9)) {
+              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_24);
+              __Pyx_INCREF(__pyx_t_9);
               __Pyx_INCREF(function);
-              __Pyx_DECREF_SET(__pyx_t_25, function);
+              __Pyx_DECREF_SET(__pyx_t_24, function);
             }
           }
-          __pyx_t_4 = (__pyx_t_10) ? __Pyx_PyObject_Call2Args(__pyx_t_25, __pyx_t_10, __pyx_t_29) : __Pyx_PyObject_CallOneArg(__pyx_t_25, __pyx_t_29);
-          __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-          __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
-          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __pyx_t_4 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_24, __pyx_t_9, __pyx_t_28) : __Pyx_PyObject_CallOneArg(__pyx_t_24, __pyx_t_28);
+          __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __Pyx_DECREF(__pyx_t_28); __pyx_t_28 = 0;
+          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 181, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
+          __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
           __Pyx_XDECREF_SET(__pyx_v_indices, __pyx_t_4);
           __pyx_t_4 = 0;
 
-          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":186
+          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":182
  *                             canditate_design = design.copy()
  *                             indices = np.where(np.all(canditate_design == unique_design_points[i].reshape(self.num_ingredient,1,1), axis=0))
  *                             subset = canditate_design[:,indices[0],indices[1]].shape             # <<<<<<<<<<<<<<
  *                             cox = cox_directions[cox_direction,:].reshape(self.num_ingredient,1,1)
  *                             # Replace the current cluster Mixture with the Cox direction
  */
-          __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_indices, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 186, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_indices, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 182, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_25 = __Pyx_GetItemInt(__pyx_v_indices, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 186, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_25);
-          __pyx_t_29 = PyTuple_New(3); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 186, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_29);
+          __pyx_t_24 = __Pyx_GetItemInt(__pyx_v_indices, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 182, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
+          __pyx_t_28 = PyTuple_New(3); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 182, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_28);
           __Pyx_INCREF(__pyx_slice_);
           __Pyx_GIVEREF(__pyx_slice_);
-          PyTuple_SET_ITEM(__pyx_t_29, 0, __pyx_slice_);
+          PyTuple_SET_ITEM(__pyx_t_28, 0, __pyx_slice_);
           __Pyx_GIVEREF(__pyx_t_4);
-          PyTuple_SET_ITEM(__pyx_t_29, 1, __pyx_t_4);
-          __Pyx_GIVEREF(__pyx_t_25);
-          PyTuple_SET_ITEM(__pyx_t_29, 2, __pyx_t_25);
+          PyTuple_SET_ITEM(__pyx_t_28, 1, __pyx_t_4);
+          __Pyx_GIVEREF(__pyx_t_24);
+          PyTuple_SET_ITEM(__pyx_t_28, 2, __pyx_t_24);
           __pyx_t_4 = 0;
-          __pyx_t_25 = 0;
-          __pyx_t_25 = __Pyx_PyObject_GetItem(__pyx_v_canditate_design, __pyx_t_29); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 186, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_25);
-          __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
-          __pyx_t_29 = __Pyx_PyObject_GetAttrStr(__pyx_t_25, __pyx_n_s_shape); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 186, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_29);
-          __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
-          __Pyx_XDECREF_SET(__pyx_v_subset, __pyx_t_29);
-          __pyx_t_29 = 0;
+          __pyx_t_24 = 0;
+          __pyx_t_24 = __Pyx_PyObject_GetItem(__pyx_v_canditate_design, __pyx_t_28); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 182, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
+          __Pyx_DECREF(__pyx_t_28); __pyx_t_28 = 0;
+          __pyx_t_28 = __Pyx_PyObject_GetAttrStr(__pyx_t_24, __pyx_n_s_shape); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 182, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_28);
+          __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
+          __Pyx_XDECREF_SET(__pyx_v_subset, __pyx_t_28);
+          __pyx_t_28 = 0;
 
-          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":187
+          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":183
  *                             indices = np.where(np.all(canditate_design == unique_design_points[i].reshape(self.num_ingredient,1,1), axis=0))
  *                             subset = canditate_design[:,indices[0],indices[1]].shape
  *                             cox = cox_directions[cox_direction,:].reshape(self.num_ingredient,1,1)             # <<<<<<<<<<<<<<
  *                             # Replace the current cluster Mixture with the Cox direction
  *                             canditate_design[:,indices[0],indices[1]] = np.zeros(subset) + cox.reshape(3,1)
  */
-          __pyx_t_25 = __Pyx_PyInt_From_int(__pyx_v_cox_direction); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 187, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_25);
-          __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 187, __pyx_L1_error)
+          __pyx_t_24 = __Pyx_PyInt_From_int(__pyx_v_cox_direction); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 183, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
+          __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 183, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __Pyx_GIVEREF(__pyx_t_25);
-          PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_25);
+          __Pyx_GIVEREF(__pyx_t_24);
+          PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_24);
           __Pyx_INCREF(__pyx_slice_);
           __Pyx_GIVEREF(__pyx_slice_);
           PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_slice_);
-          __pyx_t_25 = 0;
-          __pyx_t_25 = __Pyx_PyObject_GetItem(((PyObject *)__pyx_v_cox_directions), __pyx_t_4); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 187, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_25);
+          __pyx_t_24 = 0;
+          __pyx_t_24 = __Pyx_PyObject_GetItem(((PyObject *)__pyx_v_cox_directions), __pyx_t_4); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 183, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_25, __pyx_n_s_reshape); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 187, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_24, __pyx_n_s_reshape); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 183, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
-          __pyx_t_25 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_ingredient); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 187, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_25);
-          __pyx_t_10 = NULL;
-          __pyx_t_28 = 0;
+          __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
+          __pyx_t_24 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_num_ingredient); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 183, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
+          __pyx_t_9 = NULL;
+          __pyx_t_27 = 0;
           if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
-            __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_4);
-            if (likely(__pyx_t_10)) {
+            __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_4);
+            if (likely(__pyx_t_9)) {
               PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
-              __Pyx_INCREF(__pyx_t_10);
+              __Pyx_INCREF(__pyx_t_9);
               __Pyx_INCREF(function);
               __Pyx_DECREF_SET(__pyx_t_4, function);
-              __pyx_t_28 = 1;
+              __pyx_t_27 = 1;
             }
           }
           #if CYTHON_FAST_PYCALL
           if (PyFunction_Check(__pyx_t_4)) {
-            PyObject *__pyx_temp[4] = {__pyx_t_10, __pyx_t_25, __pyx_int_1, __pyx_int_1};
-            __pyx_t_29 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_28, 3+__pyx_t_28); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 187, __pyx_L1_error)
-            __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-            __Pyx_GOTREF(__pyx_t_29);
-            __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
+            PyObject *__pyx_temp[4] = {__pyx_t_9, __pyx_t_24, __pyx_int_1, __pyx_int_1};
+            __pyx_t_28 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_27, 3+__pyx_t_27); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 183, __pyx_L1_error)
+            __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+            __Pyx_GOTREF(__pyx_t_28);
+            __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
           } else
           #endif
           #if CYTHON_FAST_PYCCALL
           if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
-            PyObject *__pyx_temp[4] = {__pyx_t_10, __pyx_t_25, __pyx_int_1, __pyx_int_1};
-            __pyx_t_29 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_28, 3+__pyx_t_28); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 187, __pyx_L1_error)
-            __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-            __Pyx_GOTREF(__pyx_t_29);
-            __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
+            PyObject *__pyx_temp[4] = {__pyx_t_9, __pyx_t_24, __pyx_int_1, __pyx_int_1};
+            __pyx_t_28 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_27, 3+__pyx_t_27); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 183, __pyx_L1_error)
+            __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+            __Pyx_GOTREF(__pyx_t_28);
+            __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
           } else
           #endif
           {
-            __pyx_t_12 = PyTuple_New(3+__pyx_t_28); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 187, __pyx_L1_error)
+            __pyx_t_12 = PyTuple_New(3+__pyx_t_27); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 183, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_12);
-            if (__pyx_t_10) {
-              __Pyx_GIVEREF(__pyx_t_10); PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_10); __pyx_t_10 = NULL;
+            if (__pyx_t_9) {
+              __Pyx_GIVEREF(__pyx_t_9); PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_9); __pyx_t_9 = NULL;
             }
-            __Pyx_GIVEREF(__pyx_t_25);
-            PyTuple_SET_ITEM(__pyx_t_12, 0+__pyx_t_28, __pyx_t_25);
+            __Pyx_GIVEREF(__pyx_t_24);
+            PyTuple_SET_ITEM(__pyx_t_12, 0+__pyx_t_27, __pyx_t_24);
             __Pyx_INCREF(__pyx_int_1);
             __Pyx_GIVEREF(__pyx_int_1);
-            PyTuple_SET_ITEM(__pyx_t_12, 1+__pyx_t_28, __pyx_int_1);
+            PyTuple_SET_ITEM(__pyx_t_12, 1+__pyx_t_27, __pyx_int_1);
             __Pyx_INCREF(__pyx_int_1);
             __Pyx_GIVEREF(__pyx_int_1);
-            PyTuple_SET_ITEM(__pyx_t_12, 2+__pyx_t_28, __pyx_int_1);
-            __pyx_t_25 = 0;
-            __pyx_t_29 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_12, NULL); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 187, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_29);
+            PyTuple_SET_ITEM(__pyx_t_12, 2+__pyx_t_27, __pyx_int_1);
+            __pyx_t_24 = 0;
+            __pyx_t_28 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_12, NULL); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 183, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_28);
             __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
           }
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __Pyx_XDECREF_SET(__pyx_v_cox, __pyx_t_29);
-          __pyx_t_29 = 0;
+          __Pyx_XDECREF_SET(__pyx_v_cox, __pyx_t_28);
+          __pyx_t_28 = 0;
 
-          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":189
+          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":185
  *                             cox = cox_directions[cox_direction,:].reshape(self.num_ingredient,1,1)
  *                             # Replace the current cluster Mixture with the Cox direction
  *                             canditate_design[:,indices[0],indices[1]] = np.zeros(subset) + cox.reshape(3,1)             # <<<<<<<<<<<<<<
- *                             try:
- *                                 # Compute optimality criterion for candidate design
+ * 
+ * 
  */
-          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 185, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_zeros); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 189, __pyx_L1_error)
+          __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_zeros); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_12);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __pyx_t_4 = NULL;
@@ -6847,339 +6745,241 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
               __Pyx_DECREF_SET(__pyx_t_12, function);
             }
           }
-          __pyx_t_29 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_12, __pyx_t_4, __pyx_v_subset) : __Pyx_PyObject_CallOneArg(__pyx_t_12, __pyx_v_subset);
+          __pyx_t_28 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_12, __pyx_t_4, __pyx_v_subset) : __Pyx_PyObject_CallOneArg(__pyx_t_12, __pyx_v_subset);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 189, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_29);
+          if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_28);
           __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-          __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_v_cox, __pyx_n_s_reshape); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 189, __pyx_L1_error)
+          __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_v_cox, __pyx_n_s_reshape); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_12);
-          __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 185, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-          __pyx_t_12 = PyNumber_Add(__pyx_t_29, __pyx_t_4); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 189, __pyx_L1_error)
+          __pyx_t_12 = PyNumber_Add(__pyx_t_28, __pyx_t_4); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 185, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_12);
-          __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
+          __Pyx_DECREF(__pyx_t_28); __pyx_t_28 = 0;
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_indices, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_indices, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 185, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_29 = __Pyx_GetItemInt(__pyx_v_indices, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 189, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_29);
-          __pyx_t_25 = PyTuple_New(3); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 189, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_25);
+          __pyx_t_28 = __Pyx_GetItemInt(__pyx_v_indices, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_28);
+          __pyx_t_24 = PyTuple_New(3); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
           __Pyx_INCREF(__pyx_slice_);
           __Pyx_GIVEREF(__pyx_slice_);
-          PyTuple_SET_ITEM(__pyx_t_25, 0, __pyx_slice_);
+          PyTuple_SET_ITEM(__pyx_t_24, 0, __pyx_slice_);
           __Pyx_GIVEREF(__pyx_t_4);
-          PyTuple_SET_ITEM(__pyx_t_25, 1, __pyx_t_4);
-          __Pyx_GIVEREF(__pyx_t_29);
-          PyTuple_SET_ITEM(__pyx_t_25, 2, __pyx_t_29);
+          PyTuple_SET_ITEM(__pyx_t_24, 1, __pyx_t_4);
+          __Pyx_GIVEREF(__pyx_t_28);
+          PyTuple_SET_ITEM(__pyx_t_24, 2, __pyx_t_28);
           __pyx_t_4 = 0;
-          __pyx_t_29 = 0;
-          if (unlikely(PyObject_SetItem(__pyx_v_canditate_design, __pyx_t_25, __pyx_t_12) < 0)) __PYX_ERR(0, 189, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
+          __pyx_t_28 = 0;
+          if (unlikely(PyObject_SetItem(__pyx_v_canditate_design, __pyx_t_24, __pyx_t_12) < 0)) __PYX_ERR(0, 185, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
           __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
 
           /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":190
- *                             # Replace the current cluster Mixture with the Cox direction
- *                             canditate_design[:,indices[0],indices[1]] = np.zeros(subset) + cox.reshape(3,1)
- *                             try:             # <<<<<<<<<<<<<<
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)
+ * 
+ *                             # Compute optimality criterion for candidate design
+ *                             i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)             # <<<<<<<<<<<<<<
+ *                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.001 :
+ * 
  */
-          {
-            __Pyx_PyThreadState_declare
-            __Pyx_PyThreadState_assign
-            __Pyx_ExceptionSave(&__pyx_t_8, &__pyx_t_7, &__pyx_t_6);
-            __Pyx_XGOTREF(__pyx_t_8);
-            __Pyx_XGOTREF(__pyx_t_7);
-            __Pyx_XGOTREF(__pyx_t_6);
-            /*try:*/ {
-
-              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":192
- *                             try:
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)             # <<<<<<<<<<<<<<
- *                             except np.linalg.LinAlgError:
- *                                 # Skip to the next Cox direction if a LinAlgError occurs
- */
-              __Pyx_GetModuleGlobalName(__pyx_t_25, __pyx_n_s_get_i_optimality_bayesian); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 192, __pyx_L12_error)
-              __Pyx_GOTREF(__pyx_t_25);
-              __pyx_t_29 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_order); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 192, __pyx_L12_error)
-              __Pyx_GOTREF(__pyx_t_29);
-              __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_beta); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 192, __pyx_L12_error)
-              __Pyx_GOTREF(__pyx_t_4);
-              __pyx_t_10 = NULL;
-              __pyx_t_28 = 0;
-              if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_25))) {
-                __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_25);
-                if (likely(__pyx_t_10)) {
-                  PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_25);
-                  __Pyx_INCREF(__pyx_t_10);
-                  __Pyx_INCREF(function);
-                  __Pyx_DECREF_SET(__pyx_t_25, function);
-                  __pyx_t_28 = 1;
-                }
-              }
-              #if CYTHON_FAST_PYCALL
-              if (PyFunction_Check(__pyx_t_25)) {
-                PyObject *__pyx_temp[4] = {__pyx_t_10, __pyx_v_canditate_design, __pyx_t_29, __pyx_t_4};
-                __pyx_t_12 = __Pyx_PyFunction_FastCall(__pyx_t_25, __pyx_temp+1-__pyx_t_28, 3+__pyx_t_28); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 192, __pyx_L12_error)
-                __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-                __Pyx_GOTREF(__pyx_t_12);
-                __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
-                __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-              } else
-              #endif
-              #if CYTHON_FAST_PYCCALL
-              if (__Pyx_PyFastCFunction_Check(__pyx_t_25)) {
-                PyObject *__pyx_temp[4] = {__pyx_t_10, __pyx_v_canditate_design, __pyx_t_29, __pyx_t_4};
-                __pyx_t_12 = __Pyx_PyCFunction_FastCall(__pyx_t_25, __pyx_temp+1-__pyx_t_28, 3+__pyx_t_28); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 192, __pyx_L12_error)
-                __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-                __Pyx_GOTREF(__pyx_t_12);
-                __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
-                __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-              } else
-              #endif
-              {
-                __pyx_t_11 = PyTuple_New(3+__pyx_t_28); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 192, __pyx_L12_error)
-                __Pyx_GOTREF(__pyx_t_11);
-                if (__pyx_t_10) {
-                  __Pyx_GIVEREF(__pyx_t_10); PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_t_10); __pyx_t_10 = NULL;
-                }
-                __Pyx_INCREF(__pyx_v_canditate_design);
-                __Pyx_GIVEREF(__pyx_v_canditate_design);
-                PyTuple_SET_ITEM(__pyx_t_11, 0+__pyx_t_28, __pyx_v_canditate_design);
-                __Pyx_GIVEREF(__pyx_t_29);
-                PyTuple_SET_ITEM(__pyx_t_11, 1+__pyx_t_28, __pyx_t_29);
-                __Pyx_GIVEREF(__pyx_t_4);
-                PyTuple_SET_ITEM(__pyx_t_11, 2+__pyx_t_28, __pyx_t_4);
-                __pyx_t_29 = 0;
-                __pyx_t_4 = 0;
-                __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_25, __pyx_t_11, NULL); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 192, __pyx_L12_error)
-                __Pyx_GOTREF(__pyx_t_12);
-                __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-              }
-              __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
-              __pyx_t_13 = __pyx_PyFloat_AsFloat(__pyx_t_12); if (unlikely((__pyx_t_13 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 192, __pyx_L12_error)
-              __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-              __pyx_v_i_new_value = __pyx_t_13;
-
-              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":190
- *                             # Replace the current cluster Mixture with the Cox direction
- *                             canditate_design[:,indices[0],indices[1]] = np.zeros(subset) + cox.reshape(3,1)
- *                             try:             # <<<<<<<<<<<<<<
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)
- */
+          __Pyx_GetModuleGlobalName(__pyx_t_24, __pyx_n_s_get_i_optimality_bayesian); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 190, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_24);
+          __pyx_t_28 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_order); if (unlikely(!__pyx_t_28)) __PYX_ERR(0, 190, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_28);
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_beta); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 190, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
+          __pyx_t_9 = NULL;
+          __pyx_t_27 = 0;
+          if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_24))) {
+            __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_24);
+            if (likely(__pyx_t_9)) {
+              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_24);
+              __Pyx_INCREF(__pyx_t_9);
+              __Pyx_INCREF(function);
+              __Pyx_DECREF_SET(__pyx_t_24, function);
+              __pyx_t_27 = 1;
             }
-            __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-            __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-            __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-            goto __pyx_L19_try_end;
-            __pyx_L12_error:;
-            __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
-            __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-            __Pyx_XDECREF(__pyx_t_12); __pyx_t_12 = 0;
-            __Pyx_XDECREF(__pyx_t_23); __pyx_t_23 = 0;
-            __Pyx_XDECREF(__pyx_t_25); __pyx_t_25 = 0;
-            __Pyx_XDECREF(__pyx_t_29); __pyx_t_29 = 0;
-            __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-            __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":193
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)
- *                             except np.linalg.LinAlgError:             # <<<<<<<<<<<<<<
- *                                 # Skip to the next Cox direction if a LinAlgError occurs
- *                                 continue
- */
-            __Pyx_ErrFetch(&__pyx_t_12, &__pyx_t_25, &__pyx_t_11);
-            __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 193, __pyx_L14_except_error)
-            __Pyx_GOTREF(__pyx_t_4);
-            __pyx_t_29 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_linalg); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 193, __pyx_L14_except_error)
-            __Pyx_GOTREF(__pyx_t_29);
-            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-            __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_29, __pyx_n_s_LinAlgError); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 193, __pyx_L14_except_error)
-            __Pyx_GOTREF(__pyx_t_4);
-            __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
-            __pyx_t_28 = __Pyx_PyErr_GivenExceptionMatches(__pyx_t_12, __pyx_t_4);
-            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-            __Pyx_ErrRestore(__pyx_t_12, __pyx_t_25, __pyx_t_11);
-            __pyx_t_12 = 0; __pyx_t_25 = 0; __pyx_t_11 = 0;
-            if (__pyx_t_28) {
-              __Pyx_AddTraceback("MixtureOptDesign.CoordinateExchange.coordinate.ClusteredCoordinateExchangeIOptimal.optimize_design", __pyx_clineno, __pyx_lineno, __pyx_filename);
-              if (__Pyx_GetException(&__pyx_t_11, &__pyx_t_25, &__pyx_t_12) < 0) __PYX_ERR(0, 193, __pyx_L14_except_error)
-              __Pyx_GOTREF(__pyx_t_11);
-              __Pyx_GOTREF(__pyx_t_25);
-              __Pyx_GOTREF(__pyx_t_12);
-
-              /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":195
- *                             except np.linalg.LinAlgError:
- *                                 # Skip to the next Cox direction if a LinAlgError occurs
- *                                 continue             # <<<<<<<<<<<<<<
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:
- *                                 design = canditate_design.copy()
- */
-              goto __pyx_L21_except_continue;
-              __pyx_L21_except_continue:;
-              __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-              __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
-              __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-              goto __pyx_L18_try_continue;
-            }
-            goto __pyx_L14_except_error;
-            __pyx_L14_except_error:;
-
-            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":190
- *                             # Replace the current cluster Mixture with the Cox direction
- *                             canditate_design[:,indices[0],indices[1]] = np.zeros(subset) + cox.reshape(3,1)
- *                             try:             # <<<<<<<<<<<<<<
- *                                 # Compute optimality criterion for candidate design
- *                                 i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)
- */
-            __Pyx_XGIVEREF(__pyx_t_8);
-            __Pyx_XGIVEREF(__pyx_t_7);
-            __Pyx_XGIVEREF(__pyx_t_6);
-            __Pyx_ExceptionReset(__pyx_t_8, __pyx_t_7, __pyx_t_6);
-            goto __pyx_L1_error;
-            __pyx_L18_try_continue:;
-            __Pyx_XGIVEREF(__pyx_t_8);
-            __Pyx_XGIVEREF(__pyx_t_7);
-            __Pyx_XGIVEREF(__pyx_t_6);
-            __Pyx_ExceptionReset(__pyx_t_8, __pyx_t_7, __pyx_t_6);
-            goto __pyx_L10_continue;
-            __pyx_L19_try_end:;
           }
-
-          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":196
- *                                 # Skip to the next Cox direction if a LinAlgError occurs
- *                                 continue
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:             # <<<<<<<<<<<<<<
- *                                 design = canditate_design.copy()
- *                                 unique_design_points[i] = cox.reshape(3,)
- */
-          __pyx_t_30 = ((__pyx_v_i_new_value > 0.0) != 0);
-          if (__pyx_t_30) {
-          } else {
-            __pyx_t_17 = __pyx_t_30;
-            goto __pyx_L23_bool_binop_done;
-          }
-          __pyx_t_30 = (((__pyx_v_i_best - __pyx_v_i_new_value) >= 0.01) != 0);
-          __pyx_t_17 = __pyx_t_30;
-          __pyx_L23_bool_binop_done:;
-          if (__pyx_t_17) {
-
-            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":197
- *                                 continue
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:
- *                                 design = canditate_design.copy()             # <<<<<<<<<<<<<<
- *                                 unique_design_points[i] = cox.reshape(3,)
- *                                 i_best = i_new_value
- */
-            __pyx_t_25 = __Pyx_PyObject_GetAttrStr(__pyx_v_canditate_design, __pyx_n_s_copy); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 197, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_25);
-            __pyx_t_11 = NULL;
-            if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_25))) {
-              __pyx_t_11 = PyMethod_GET_SELF(__pyx_t_25);
-              if (likely(__pyx_t_11)) {
-                PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_25);
-                __Pyx_INCREF(__pyx_t_11);
-                __Pyx_INCREF(function);
-                __Pyx_DECREF_SET(__pyx_t_25, function);
-              }
-            }
-            __pyx_t_12 = (__pyx_t_11) ? __Pyx_PyObject_CallOneArg(__pyx_t_25, __pyx_t_11) : __Pyx_PyObject_CallNoArg(__pyx_t_25);
-            __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-            if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 197, __pyx_L1_error)
+          #if CYTHON_FAST_PYCALL
+          if (PyFunction_Check(__pyx_t_24)) {
+            PyObject *__pyx_temp[4] = {__pyx_t_9, __pyx_v_canditate_design, __pyx_t_28, __pyx_t_4};
+            __pyx_t_12 = __Pyx_PyFunction_FastCall(__pyx_t_24, __pyx_temp+1-__pyx_t_27, 3+__pyx_t_27); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 190, __pyx_L1_error)
+            __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
             __Pyx_GOTREF(__pyx_t_12);
-            __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
-            if (!(likely(((__pyx_t_12) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_12, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 197, __pyx_L1_error)
+            __Pyx_DECREF(__pyx_t_28); __pyx_t_28 = 0;
+            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          } else
+          #endif
+          #if CYTHON_FAST_PYCCALL
+          if (__Pyx_PyFastCFunction_Check(__pyx_t_24)) {
+            PyObject *__pyx_temp[4] = {__pyx_t_9, __pyx_v_canditate_design, __pyx_t_28, __pyx_t_4};
+            __pyx_t_12 = __Pyx_PyCFunction_FastCall(__pyx_t_24, __pyx_temp+1-__pyx_t_27, 3+__pyx_t_27); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 190, __pyx_L1_error)
+            __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+            __Pyx_GOTREF(__pyx_t_12);
+            __Pyx_DECREF(__pyx_t_28); __pyx_t_28 = 0;
+            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          } else
+          #endif
+          {
+            __pyx_t_10 = PyTuple_New(3+__pyx_t_27); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 190, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_10);
+            if (__pyx_t_9) {
+              __Pyx_GIVEREF(__pyx_t_9); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_9); __pyx_t_9 = NULL;
+            }
+            __Pyx_INCREF(__pyx_v_canditate_design);
+            __Pyx_GIVEREF(__pyx_v_canditate_design);
+            PyTuple_SET_ITEM(__pyx_t_10, 0+__pyx_t_27, __pyx_v_canditate_design);
+            __Pyx_GIVEREF(__pyx_t_28);
+            PyTuple_SET_ITEM(__pyx_t_10, 1+__pyx_t_27, __pyx_t_28);
+            __Pyx_GIVEREF(__pyx_t_4);
+            PyTuple_SET_ITEM(__pyx_t_10, 2+__pyx_t_27, __pyx_t_4);
+            __pyx_t_28 = 0;
+            __pyx_t_4 = 0;
+            __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_24, __pyx_t_10, NULL); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 190, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_12);
+            __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+          }
+          __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
+          __pyx_t_13 = __pyx_PyFloat_AsFloat(__pyx_t_12); if (unlikely((__pyx_t_13 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 190, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+          __pyx_v_i_new_value = __pyx_t_13;
+
+          /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":191
+ *                             # Compute optimality criterion for candidate design
+ *                             i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)
+ *                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.001 :             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+          __pyx_t_29 = ((__pyx_v_i_new_value != 100.0) != 0);
+          if (__pyx_t_29) {
+          } else {
+            __pyx_t_16 = __pyx_t_29;
+            goto __pyx_L13_bool_binop_done;
+          }
+          __pyx_t_29 = ((__pyx_v_i_best > __pyx_v_i_new_value) != 0);
+          if (__pyx_t_29) {
+          } else {
+            __pyx_t_16 = __pyx_t_29;
+            goto __pyx_L13_bool_binop_done;
+          }
+          __pyx_t_29 = ((fabsf((__pyx_v_i_best - __pyx_v_i_new_value)) > 0.001) != 0);
+          __pyx_t_16 = __pyx_t_29;
+          __pyx_L13_bool_binop_done:;
+          if (__pyx_t_16) {
+
+            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":195
+ * 
+ * 
+ *                                 design = canditate_design.copy()             # <<<<<<<<<<<<<<
+ * 
+ *                                 unique_design_points[i] = cox.reshape(3,)
+ */
+            __pyx_t_24 = __Pyx_PyObject_GetAttrStr(__pyx_v_canditate_design, __pyx_n_s_copy); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 195, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_24);
+            __pyx_t_10 = NULL;
+            if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_24))) {
+              __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_24);
+              if (likely(__pyx_t_10)) {
+                PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_24);
+                __Pyx_INCREF(__pyx_t_10);
+                __Pyx_INCREF(function);
+                __Pyx_DECREF_SET(__pyx_t_24, function);
+              }
+            }
+            __pyx_t_12 = (__pyx_t_10) ? __Pyx_PyObject_CallOneArg(__pyx_t_24, __pyx_t_10) : __Pyx_PyObject_CallNoArg(__pyx_t_24);
+            __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
+            if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 195, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_12);
+            __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
+            if (!(likely(((__pyx_t_12) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_12, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 195, __pyx_L1_error)
             __pyx_t_5 = ((PyArrayObject *)__pyx_t_12);
             {
               __Pyx_BufFmt_StackElem __pyx_stack[1];
               __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_design.rcbuffer->pybuffer);
-              __pyx_t_28 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_design.rcbuffer->pybuffer, (PyObject*)__pyx_t_5, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack);
-              if (unlikely(__pyx_t_28 < 0)) {
-                PyErr_Fetch(&__pyx_t_6, &__pyx_t_7, &__pyx_t_8);
+              __pyx_t_27 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_design.rcbuffer->pybuffer, (PyObject*)__pyx_t_5, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack);
+              if (unlikely(__pyx_t_27 < 0)) {
+                PyErr_Fetch(&__pyx_t_8, &__pyx_t_7, &__pyx_t_6);
                 if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_design.rcbuffer->pybuffer, (PyObject*)__pyx_v_design, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack) == -1)) {
-                  Py_XDECREF(__pyx_t_6); Py_XDECREF(__pyx_t_7); Py_XDECREF(__pyx_t_8);
+                  Py_XDECREF(__pyx_t_8); Py_XDECREF(__pyx_t_7); Py_XDECREF(__pyx_t_6);
                   __Pyx_RaiseBufferFallbackError();
                 } else {
-                  PyErr_Restore(__pyx_t_6, __pyx_t_7, __pyx_t_8);
+                  PyErr_Restore(__pyx_t_8, __pyx_t_7, __pyx_t_6);
                 }
-                __pyx_t_6 = __pyx_t_7 = __pyx_t_8 = 0;
+                __pyx_t_8 = __pyx_t_7 = __pyx_t_6 = 0;
               }
               __pyx_pybuffernd_design.diminfo[0].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_design.diminfo[0].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_design.diminfo[1].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_design.diminfo[1].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_design.diminfo[2].strides = __pyx_pybuffernd_design.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_design.diminfo[2].shape = __pyx_pybuffernd_design.rcbuffer->pybuffer.shape[2];
-              if (unlikely(__pyx_t_28 < 0)) __PYX_ERR(0, 197, __pyx_L1_error)
+              if (unlikely(__pyx_t_27 < 0)) __PYX_ERR(0, 195, __pyx_L1_error)
             }
             __pyx_t_5 = 0;
             __Pyx_DECREF_SET(__pyx_v_design, ((PyArrayObject *)__pyx_t_12));
             __pyx_t_12 = 0;
 
-            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":198
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:
+            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":197
  *                                 design = canditate_design.copy()
+ * 
  *                                 unique_design_points[i] = cox.reshape(3,)             # <<<<<<<<<<<<<<
  *                                 i_best = i_new_value
- *         print(design_[0])
+ * 
  */
-            __pyx_t_25 = __Pyx_PyObject_GetAttrStr(__pyx_v_cox, __pyx_n_s_reshape); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 198, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_25);
-            __pyx_t_11 = NULL;
-            if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_25))) {
-              __pyx_t_11 = PyMethod_GET_SELF(__pyx_t_25);
-              if (likely(__pyx_t_11)) {
-                PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_25);
-                __Pyx_INCREF(__pyx_t_11);
+            __pyx_t_24 = __Pyx_PyObject_GetAttrStr(__pyx_v_cox, __pyx_n_s_reshape); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 197, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_24);
+            __pyx_t_10 = NULL;
+            if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_24))) {
+              __pyx_t_10 = PyMethod_GET_SELF(__pyx_t_24);
+              if (likely(__pyx_t_10)) {
+                PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_24);
+                __Pyx_INCREF(__pyx_t_10);
                 __Pyx_INCREF(function);
-                __Pyx_DECREF_SET(__pyx_t_25, function);
+                __Pyx_DECREF_SET(__pyx_t_24, function);
               }
             }
-            __pyx_t_12 = (__pyx_t_11) ? __Pyx_PyObject_Call2Args(__pyx_t_25, __pyx_t_11, __pyx_int_3) : __Pyx_PyObject_CallOneArg(__pyx_t_25, __pyx_int_3);
-            __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-            if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 198, __pyx_L1_error)
+            __pyx_t_12 = (__pyx_t_10) ? __Pyx_PyObject_Call2Args(__pyx_t_24, __pyx_t_10, __pyx_int_3) : __Pyx_PyObject_CallOneArg(__pyx_t_24, __pyx_int_3);
+            __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
+            if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 197, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_12);
-            __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
-            if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_unique_design_points), __pyx_v_i, __pyx_t_12, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1) < 0)) __PYX_ERR(0, 198, __pyx_L1_error)
+            __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
+            if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_unique_design_points), __pyx_v_i, __pyx_t_12, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1) < 0)) __PYX_ERR(0, 197, __pyx_L1_error)
             __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
 
-            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":199
- *                                 design = canditate_design.copy()
+            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":198
+ * 
  *                                 unique_design_points[i] = cox.reshape(3,)
  *                                 i_best = i_new_value             # <<<<<<<<<<<<<<
+ * 
  *         print(design_[0])
- *         print("Original Optimality criterion value: ", opt_crit_value_orig)
  */
             __pyx_v_i_best = __pyx_v_i_new_value;
 
-            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":196
- *                                 # Skip to the next Cox direction if a LinAlgError occurs
- *                                 continue
- *                             if i_new_value > 0 and i_best - i_new_value >= 0.01:             # <<<<<<<<<<<<<<
- *                                 design = canditate_design.copy()
- *                                 unique_design_points[i] = cox.reshape(3,)
+            /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":191
+ *                             # Compute optimality criterion for candidate design
+ *                             i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)
+ *                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.001 :             # <<<<<<<<<<<<<<
+ * 
+ * 
  */
           }
-          __pyx_L10_continue:;
         }
       }
     }
 
-    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":170
+    /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":166
  * 
  *         it = 0
  *         for _ in range(self.iteration):             # <<<<<<<<<<<<<<
  *             # If there was no improvement in this iteration
- *             if abs(i_opt_critc_value - i_best) < 0.01:
+ *             if abs(i_opt_critc_value - i_best) < 0.001:
  */
   }
   __pyx_L4_break:;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":200
- *                                 unique_design_points[i] = cox.reshape(3,)
  *                                 i_best = i_new_value
+ * 
  *         print(design_[0])             # <<<<<<<<<<<<<<
  *         print("Original Optimality criterion value: ", opt_crit_value_orig)
  *         print("Final Optimality criterion value: ", i_best)
@@ -7190,7 +6990,7 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":201
- *                                 i_best = i_new_value
+ * 
  *         print(design_[0])
  *         print("Original Optimality criterion value: ", opt_crit_value_orig)             # <<<<<<<<<<<<<<
  *         print("Final Optimality criterion value: ", i_best)
@@ -7214,7 +7014,7 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
  *         print("Original Optimality criterion value: ", opt_crit_value_orig)
  *         print("Final Optimality criterion value: ", i_best)             # <<<<<<<<<<<<<<
  *         print("Number of iterations: ", it)
- *         return design, design_[0]
+ *         return design, design_[0],i_best,opt_crit_value_orig,len(unique_rows(design))
  */
   __pyx_t_12 = PyFloat_FromDouble(__pyx_v_i_best); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 202, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
@@ -7233,7 +7033,7 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
  *         print("Original Optimality criterion value: ", opt_crit_value_orig)
  *         print("Final Optimality criterion value: ", i_best)
  *         print("Number of iterations: ", it)             # <<<<<<<<<<<<<<
- *         return design, design_[0]
+ *         return design, design_[0],i_best,opt_crit_value_orig,len(unique_rows(design))
  */
   __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_it); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -7251,24 +7051,58 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
   /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":204
  *         print("Final Optimality criterion value: ", i_best)
  *         print("Number of iterations: ", it)
- *         return design, design_[0]             # <<<<<<<<<<<<<<
+ *         return design, design_[0],i_best,opt_crit_value_orig,len(unique_rows(design))             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_12 = __Pyx_GetItemInt(__pyx_v_design_, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 204, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_i_best); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_24 = PyFloat_FromDouble(__pyx_v_opt_crit_value_orig); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_24);
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_unique_rows); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_28 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
+    __pyx_t_28 = PyMethod_GET_SELF(__pyx_t_4);
+    if (likely(__pyx_t_28)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+      __Pyx_INCREF(__pyx_t_28);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_4, function);
+    }
+  }
+  __pyx_t_10 = (__pyx_t_28) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_28, ((PyObject *)__pyx_v_design)) : __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)__pyx_v_design));
+  __Pyx_XDECREF(__pyx_t_28); __pyx_t_28 = 0;
+  if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_14 = PyObject_Length(__pyx_t_10); if (unlikely(__pyx_t_14 == ((Py_ssize_t)-1))) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __pyx_t_10 = PyInt_FromSsize_t(__pyx_t_14); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __pyx_t_4 = PyTuple_New(5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_INCREF(((PyObject *)__pyx_v_design));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_design));
-  PyTuple_SET_ITEM(__pyx_t_1, 0, ((PyObject *)__pyx_v_design));
+  PyTuple_SET_ITEM(__pyx_t_4, 0, ((PyObject *)__pyx_v_design));
   __Pyx_GIVEREF(__pyx_t_12);
-  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_12);
+  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_12);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_24);
+  PyTuple_SET_ITEM(__pyx_t_4, 3, __pyx_t_24);
+  __Pyx_GIVEREF(__pyx_t_10);
+  PyTuple_SET_ITEM(__pyx_t_4, 4, __pyx_t_10);
   __pyx_t_12 = 0;
-  __pyx_r = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
+  __pyx_t_24 = 0;
+  __pyx_t_10 = 0;
+  __pyx_r = ((PyObject*)__pyx_t_4);
+  __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":139
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":135
  * class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
  * 
  *     def optimize_design(self,design_) -> tuple:             # <<<<<<<<<<<<<<
@@ -7281,12 +7115,12 @@ static PyObject *__pyx_pf_16MixtureOptDesign_18CoordinateExchange_10coordinate_3
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
-  __Pyx_XDECREF(__pyx_t_11);
   __Pyx_XDECREF(__pyx_t_12);
-  __Pyx_XDECREF(__pyx_t_23);
-  __Pyx_XDECREF(__pyx_t_25);
-  __Pyx_XDECREF(__pyx_t_29);
+  __Pyx_XDECREF(__pyx_t_22);
+  __Pyx_XDECREF(__pyx_t_24);
+  __Pyx_XDECREF(__pyx_t_28);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
@@ -9388,12 +9222,11 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ImportError, __pyx_k_ImportError, sizeof(__pyx_k_ImportError), 0, 0, 1, 1},
   {&__pyx_kp_s_Incompatible_checksums_0x_x_vs_0, __pyx_k_Incompatible_checksums_0x_x_vs_0, sizeof(__pyx_k_Incompatible_checksums_0x_x_vs_0), 0, 0, 1, 0},
   {&__pyx_kp_s_Initial_design_s, __pyx_k_Initial_design_s, sizeof(__pyx_k_Initial_design_s), 0, 0, 1, 0},
-  {&__pyx_n_s_LinAlgError, __pyx_k_LinAlgError, sizeof(__pyx_k_LinAlgError), 0, 0, 1, 1},
   {&__pyx_n_s_MixtureOptDesign_CoordinateExcha, __pyx_k_MixtureOptDesign_CoordinateExcha, sizeof(__pyx_k_MixtureOptDesign_CoordinateExcha), 0, 0, 1, 1},
   {&__pyx_n_s_MixtureOptDesign_CoordinateExcha_2, __pyx_k_MixtureOptDesign_CoordinateExcha_2, sizeof(__pyx_k_MixtureOptDesign_CoordinateExcha_2), 0, 0, 1, 1},
   {&__pyx_kp_s_MixtureOptDesign_CoordinateExcha_3, __pyx_k_MixtureOptDesign_CoordinateExcha_3, sizeof(__pyx_k_MixtureOptDesign_CoordinateExcha_3), 0, 0, 1, 0},
   {&__pyx_n_s_MixtureOptDesign_HaltonDraws_hal, __pyx_k_MixtureOptDesign_HaltonDraws_hal, sizeof(__pyx_k_MixtureOptDesign_HaltonDraws_hal), 0, 0, 1, 1},
-  {&__pyx_n_s_MixtureOptDesign_MNL_mnl_utils, __pyx_k_MixtureOptDesign_MNL_mnl_utils, sizeof(__pyx_k_MixtureOptDesign_MNL_mnl_utils), 0, 0, 1, 1},
+  {&__pyx_n_s_MixtureOptDesign_MNL_utils, __pyx_k_MixtureOptDesign_MNL_utils, sizeof(__pyx_k_MixtureOptDesign_MNL_utils), 0, 0, 1, 1},
   {&__pyx_kp_s_Number_of_iterations, __pyx_k_Number_of_iterations, sizeof(__pyx_k_Number_of_iterations), 0, 0, 1, 0},
   {&__pyx_kp_s_Number_of_iterations_s, __pyx_k_Number_of_iterations_s, sizeof(__pyx_k_Number_of_iterations_s), 0, 0, 1, 0},
   {&__pyx_kp_s_Original_Optimality_criterion_va, __pyx_k_Original_Optimality_criterion_va, sizeof(__pyx_k_Original_Optimality_criterion_va), 0, 0, 1, 0},
@@ -9437,7 +9270,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_identity, __pyx_k_identity, sizeof(__pyx_k_identity), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_indices, __pyx_k_indices, sizeof(__pyx_k_indices), 0, 0, 1, 1},
-  {&__pyx_n_s_inf, __pyx_k_inf, sizeof(__pyx_k_inf), 0, 0, 1, 1},
   {&__pyx_n_s_info, __pyx_k_info, sizeof(__pyx_k_info), 0, 0, 1, 1},
   {&__pyx_n_s_it, __pyx_k_it, sizeof(__pyx_k_it), 0, 0, 1, 1},
   {&__pyx_n_s_iteration, __pyx_k_iteration, sizeof(__pyx_k_iteration), 0, 0, 1, 1},
@@ -9445,7 +9277,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_k, __pyx_k_k, sizeof(__pyx_k_k), 0, 0, 1, 1},
   {&__pyx_n_s_kappa, __pyx_k_kappa, sizeof(__pyx_k_kappa), 0, 0, 1, 1},
   {&__pyx_n_s_level, __pyx_k_level, sizeof(__pyx_k_level), 0, 0, 1, 1},
-  {&__pyx_n_s_linalg, __pyx_k_linalg, sizeof(__pyx_k_linalg), 0, 0, 1, 1},
   {&__pyx_n_s_logging, __pyx_k_logging, sizeof(__pyx_k_logging), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_metaclass, __pyx_k_metaclass, sizeof(__pyx_k_metaclass), 0, 0, 1, 1},
@@ -9531,14 +9362,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_slice_);
   __Pyx_GIVEREF(__pyx_slice_);
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":189
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":185
  *                             cox = cox_directions[cox_direction,:].reshape(self.num_ingredient,1,1)
  *                             # Replace the current cluster Mixture with the Cox direction
  *                             canditate_design[:,indices[0],indices[1]] = np.zeros(subset) + cox.reshape(3,1)             # <<<<<<<<<<<<<<
- *                             try:
- *                                 # Compute optimality criterion for candidate design
+ * 
+ * 
  */
-  __pyx_tuple__2 = PyTuple_Pack(2, __pyx_int_3, __pyx_int_1); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(2, __pyx_int_3, __pyx_int_1); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
@@ -9575,17 +9406,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":139
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":135
  * class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
  * 
  *     def optimize_design(self,design_) -> tuple:             # <<<<<<<<<<<<<<
  *         """
  *         Optimize design in regards to the optimality criterion.
  */
-  __pyx_tuple__8 = PyTuple_Pack(26, __pyx_n_s_self, __pyx_n_s_design_2, __pyx_n_s_n_ingredients, __pyx_n_s_n_sets, __pyx_n_s_n_choices, __pyx_n_s_n_points, __pyx_n_s_iteration, __pyx_n_s_opt_crit_value_orig, __pyx_n_s_i_best, __pyx_n_s_i_opt_critc_value, __pyx_n_s_i_new_value, __pyx_n_s_j, __pyx_n_s_s, __pyx_n_s_q, __pyx_n_s_cox_direction, __pyx_n_s_it, __pyx_n_s_design, __pyx_n_s_candidate_design, __pyx_n_s_cox_directions, __pyx_n_s_unique_design_points, __pyx_n_s__7, __pyx_n_s_i, __pyx_n_s_canditate_design, __pyx_n_s_indices, __pyx_n_s_subset, __pyx_n_s_cox); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __pyx_tuple__8 = PyTuple_Pack(26, __pyx_n_s_self, __pyx_n_s_design_2, __pyx_n_s_n_ingredients, __pyx_n_s_n_sets, __pyx_n_s_n_choices, __pyx_n_s_n_points, __pyx_n_s_iteration, __pyx_n_s_opt_crit_value_orig, __pyx_n_s_i_best, __pyx_n_s_i_opt_critc_value, __pyx_n_s_i_new_value, __pyx_n_s_j, __pyx_n_s_s, __pyx_n_s_q, __pyx_n_s_cox_direction, __pyx_n_s_it, __pyx_n_s_design, __pyx_n_s_candidate_design, __pyx_n_s_cox_directions, __pyx_n_s_unique_design_points, __pyx_n_s__7, __pyx_n_s_i, __pyx_n_s_canditate_design, __pyx_n_s_indices, __pyx_n_s_subset, __pyx_n_s_cox); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(2, 0, 26, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_MixtureOptDesign_CoordinateExcha_3, __pyx_n_s_optimize_design, 139, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(2, 0, 26, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_MixtureOptDesign_CoordinateExcha_3, __pyx_n_s_optimize_design, 135, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 135, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_CoordinateExchangeIOptimal(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
@@ -9996,7 +9827,7 @@ if (!__Pyx_RefNanny) {
   /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":7
  * 
  * 
- * from MixtureOptDesign.MNL.mnl_utils import *             # <<<<<<<<<<<<<<
+ * from MixtureOptDesign.MNL.utils import *             # <<<<<<<<<<<<<<
  * 
  * from MixtureOptDesign.HaltonDraws.halton_draws import HaltonDraws
  */
@@ -10005,14 +9836,14 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_n_s__6);
   __Pyx_GIVEREF(__pyx_n_s__6);
   PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s__6);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_MixtureOptDesign_MNL_mnl_utils, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_MixtureOptDesign_MNL_utils, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_import_star(__pyx_t_2) < 0) __PYX_ERR(0, 7, __pyx_L1_error);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":9
- * from MixtureOptDesign.MNL.mnl_utils import *
+ * from MixtureOptDesign.MNL.utils import *
  * 
  * from MixtureOptDesign.HaltonDraws.halton_draws import HaltonDraws             # <<<<<<<<<<<<<<
  * 
@@ -10053,50 +9884,50 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":137
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":133
  * 
  * 
  * class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):             # <<<<<<<<<<<<<<
  * 
  *     def optimize_design(self,design_) -> tuple:
  */
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(((PyObject *)__pyx_ptype_16MixtureOptDesign_18CoordinateExchange_10coordinate_CoordinateExchangeIOptimal));
   __Pyx_GIVEREF(((PyObject *)__pyx_ptype_16MixtureOptDesign_18CoordinateExchange_10coordinate_CoordinateExchangeIOptimal));
   PyTuple_SET_ITEM(__pyx_t_2, 0, ((PyObject *)__pyx_ptype_16MixtureOptDesign_18CoordinateExchange_10coordinate_CoordinateExchangeIOptimal));
-  __pyx_t_1 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_t_2, __pyx_n_s_ClusteredCoordinateExchangeIOpti, __pyx_n_s_ClusteredCoordinateExchangeIOpti, (PyObject *) NULL, __pyx_n_s_MixtureOptDesign_CoordinateExcha_2, (PyObject *) NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_t_2, __pyx_n_s_ClusteredCoordinateExchangeIOpti, __pyx_n_s_ClusteredCoordinateExchangeIOpti, (PyObject *) NULL, __pyx_n_s_MixtureOptDesign_CoordinateExcha_2, (PyObject *) NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":139
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":135
  * class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
  * 
  *     def optimize_design(self,design_) -> tuple:             # <<<<<<<<<<<<<<
  *         """
  *         Optimize design in regards to the optimality criterion.
  */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_return, __pyx_n_u_tuple) < 0) __PYX_ERR(0, 139, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_16MixtureOptDesign_18CoordinateExchange_10coordinate_35ClusteredCoordinateExchangeIOptimal_1optimize_design, 0, __pyx_n_s_ClusteredCoordinateExchangeIOpti_2, NULL, __pyx_n_s_MixtureOptDesign_CoordinateExcha_2, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 139, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_return, __pyx_n_u_tuple) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_16MixtureOptDesign_18CoordinateExchange_10coordinate_35ClusteredCoordinateExchangeIOptimal_1optimize_design, 0, __pyx_n_s_ClusteredCoordinateExchangeIOpti_2, NULL, __pyx_n_s_MixtureOptDesign_CoordinateExcha_2, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_5, __pyx_t_4);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_optimize_design, __pyx_t_5) < 0) __PYX_ERR(0, 139, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_optimize_design, __pyx_t_5) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":137
+  /* "MixtureOptDesign/CoordinateExchange/coordinate.pyx":133
  * 
  * 
  * class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):             # <<<<<<<<<<<<<<
  * 
  *     def optimize_design(self,design_) -> tuple:
  */
-  __pyx_t_5 = __Pyx_Py3ClassCreate(__pyx_t_1, __pyx_n_s_ClusteredCoordinateExchangeIOpti, __pyx_t_2, __pyx_t_3, NULL, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_Py3ClassCreate(__pyx_t_1, __pyx_n_s_ClusteredCoordinateExchangeIOpti, __pyx_t_2, __pyx_t_3, NULL, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ClusteredCoordinateExchangeIOpti, __pyx_t_5) < 0) __PYX_ERR(0, 137, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ClusteredCoordinateExchangeIOpti, __pyx_t_5) < 0) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -11515,46 +11346,6 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, 
      "Buffer acquisition failed on assignment; and then reacquiring the old buffer failed too!");
 }
 
-/* pyobject_as_double */
-  static double __Pyx__PyObject_AsDouble(PyObject* obj) {
-    PyObject* float_value;
-#if !CYTHON_USE_TYPE_SLOTS
-    float_value = PyNumber_Float(obj);  if ((0)) goto bad;
-#else
-    PyNumberMethods *nb = Py_TYPE(obj)->tp_as_number;
-    if (likely(nb) && likely(nb->nb_float)) {
-        float_value = nb->nb_float(obj);
-        if (likely(float_value) && unlikely(!PyFloat_Check(float_value))) {
-            PyErr_Format(PyExc_TypeError,
-                "__float__ returned non-float (type %.200s)",
-                Py_TYPE(float_value)->tp_name);
-            Py_DECREF(float_value);
-            goto bad;
-        }
-    } else if (PyUnicode_CheckExact(obj) || PyBytes_CheckExact(obj)) {
-#if PY_MAJOR_VERSION >= 3
-        float_value = PyFloat_FromString(obj);
-#else
-        float_value = PyFloat_FromString(obj, 0);
-#endif
-    } else {
-        PyObject* args = PyTuple_New(1);
-        if (unlikely(!args)) goto bad;
-        PyTuple_SET_ITEM(args, 0, obj);
-        float_value = PyObject_Call((PyObject*)&PyFloat_Type, args, 0);
-        PyTuple_SET_ITEM(args, 0, 0);
-        Py_DECREF(args);
-    }
-#endif
-    if (likely(float_value)) {
-        double value = PyFloat_AS_DOUBLE(float_value);
-        Py_DECREF(float_value);
-        return value;
-    }
-bad:
-    return (double)-1;
-}
-
 /* ObjectGetItem */
   #if CYTHON_USE_TYPE_SLOTS
 static PyObject *__Pyx_PyObject_GetIndex(PyObject *obj, PyObject* index) {
@@ -11583,236 +11374,6 @@ static PyObject *__Pyx_PyObject_GetItem(PyObject *obj, PyObject* key) {
     return __Pyx_PyObject_GetIndex(obj, key);
 }
 #endif
-
-/* GetTopmostException */
-  #if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem *
-__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
-{
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
-           exc_info->previous_item != NULL)
-    {
-        exc_info = exc_info->previous_item;
-    }
-    return exc_info;
-}
-#endif
-
-/* SaveResetException */
-  #if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
-    *type = exc_info->exc_type;
-    *value = exc_info->exc_value;
-    *tb = exc_info->exc_traceback;
-    #else
-    *type = tstate->exc_type;
-    *value = tstate->exc_value;
-    *tb = tstate->exc_traceback;
-    #endif
-    Py_XINCREF(*type);
-    Py_XINCREF(*value);
-    Py_XINCREF(*tb);
-}
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    tmp_type = exc_info->exc_type;
-    tmp_value = exc_info->exc_value;
-    tmp_tb = exc_info->exc_traceback;
-    exc_info->exc_type = type;
-    exc_info->exc_value = value;
-    exc_info->exc_traceback = tb;
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = type;
-    tstate->exc_value = value;
-    tstate->exc_traceback = tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-#endif
-
-/* FastTypeChecks */
-  #if CYTHON_COMPILING_IN_CPYTHON
-static int __Pyx_InBases(PyTypeObject *a, PyTypeObject *b) {
-    while (a) {
-        a = a->tp_base;
-        if (a == b)
-            return 1;
-    }
-    return b == &PyBaseObject_Type;
-}
-static CYTHON_INLINE int __Pyx_IsSubtype(PyTypeObject *a, PyTypeObject *b) {
-    PyObject *mro;
-    if (a == b) return 1;
-    mro = a->tp_mro;
-    if (likely(mro)) {
-        Py_ssize_t i, n;
-        n = PyTuple_GET_SIZE(mro);
-        for (i = 0; i < n; i++) {
-            if (PyTuple_GET_ITEM(mro, i) == (PyObject *)b)
-                return 1;
-        }
-        return 0;
-    }
-    return __Pyx_InBases(a, b);
-}
-#if PY_MAJOR_VERSION == 2
-static int __Pyx_inner_PyErr_GivenExceptionMatches2(PyObject *err, PyObject* exc_type1, PyObject* exc_type2) {
-    PyObject *exception, *value, *tb;
-    int res;
-    __Pyx_PyThreadState_declare
-    __Pyx_PyThreadState_assign
-    __Pyx_ErrFetch(&exception, &value, &tb);
-    res = exc_type1 ? PyObject_IsSubclass(err, exc_type1) : 0;
-    if (unlikely(res == -1)) {
-        PyErr_WriteUnraisable(err);
-        res = 0;
-    }
-    if (!res) {
-        res = PyObject_IsSubclass(err, exc_type2);
-        if (unlikely(res == -1)) {
-            PyErr_WriteUnraisable(err);
-            res = 0;
-        }
-    }
-    __Pyx_ErrRestore(exception, value, tb);
-    return res;
-}
-#else
-static CYTHON_INLINE int __Pyx_inner_PyErr_GivenExceptionMatches2(PyObject *err, PyObject* exc_type1, PyObject *exc_type2) {
-    int res = exc_type1 ? __Pyx_IsSubtype((PyTypeObject*)err, (PyTypeObject*)exc_type1) : 0;
-    if (!res) {
-        res = __Pyx_IsSubtype((PyTypeObject*)err, (PyTypeObject*)exc_type2);
-    }
-    return res;
-}
-#endif
-static int __Pyx_PyErr_GivenExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
-    Py_ssize_t i, n;
-    assert(PyExceptionClass_Check(exc_type));
-    n = PyTuple_GET_SIZE(tuple);
-#if PY_MAJOR_VERSION >= 3
-    for (i=0; i<n; i++) {
-        if (exc_type == PyTuple_GET_ITEM(tuple, i)) return 1;
-    }
-#endif
-    for (i=0; i<n; i++) {
-        PyObject *t = PyTuple_GET_ITEM(tuple, i);
-        #if PY_MAJOR_VERSION < 3
-        if (likely(exc_type == t)) return 1;
-        #endif
-        if (likely(PyExceptionClass_Check(t))) {
-            if (__Pyx_inner_PyErr_GivenExceptionMatches2(exc_type, NULL, t)) return 1;
-        } else {
-        }
-    }
-    return 0;
-}
-static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches(PyObject *err, PyObject* exc_type) {
-    if (likely(err == exc_type)) return 1;
-    if (likely(PyExceptionClass_Check(err))) {
-        if (likely(PyExceptionClass_Check(exc_type))) {
-            return __Pyx_inner_PyErr_GivenExceptionMatches2(err, NULL, exc_type);
-        } else if (likely(PyTuple_Check(exc_type))) {
-            return __Pyx_PyErr_GivenExceptionMatchesTuple(err, exc_type);
-        } else {
-        }
-    }
-    return PyErr_GivenExceptionMatches(err, exc_type);
-}
-static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObject *exc_type1, PyObject *exc_type2) {
-    assert(PyExceptionClass_Check(exc_type1));
-    assert(PyExceptionClass_Check(exc_type2));
-    if (likely(err == exc_type1 || err == exc_type2)) return 1;
-    if (likely(PyExceptionClass_Check(err))) {
-        return __Pyx_inner_PyErr_GivenExceptionMatches2(err, exc_type1, exc_type2);
-    }
-    return (PyErr_GivenExceptionMatches(err, exc_type1) || PyErr_GivenExceptionMatches(err, exc_type2));
-}
-#endif
-
-/* GetException */
-  #if CYTHON_FAST_THREAD_STATE
-static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb)
-#else
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb)
-#endif
-{
-    PyObject *local_type, *local_value, *local_tb;
-#if CYTHON_FAST_THREAD_STATE
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    local_type = tstate->curexc_type;
-    local_value = tstate->curexc_value;
-    local_tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
-#else
-    PyErr_Fetch(&local_type, &local_value, &local_tb);
-#endif
-    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
-#if CYTHON_FAST_THREAD_STATE
-    if (unlikely(tstate->curexc_type))
-#else
-    if (unlikely(PyErr_Occurred()))
-#endif
-        goto bad;
-    #if PY_MAJOR_VERSION >= 3
-    if (local_tb) {
-        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
-            goto bad;
-    }
-    #endif
-    Py_XINCREF(local_tb);
-    Py_XINCREF(local_type);
-    Py_XINCREF(local_value);
-    *type = local_type;
-    *value = local_value;
-    *tb = local_tb;
-#if CYTHON_FAST_THREAD_STATE
-    #if CYTHON_USE_EXC_INFO_STACK
-    {
-        _PyErr_StackItem *exc_info = tstate->exc_info;
-        tmp_type = exc_info->exc_type;
-        tmp_value = exc_info->exc_value;
-        tmp_tb = exc_info->exc_traceback;
-        exc_info->exc_type = local_type;
-        exc_info->exc_value = local_value;
-        exc_info->exc_traceback = local_tb;
-    }
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = local_type;
-    tstate->exc_value = local_value;
-    tstate->exc_traceback = local_tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-#else
-    PyErr_SetExcInfo(local_type, local_value, local_tb);
-#endif
-    return 0;
-bad:
-    *type = 0;
-    *value = 0;
-    *tb = 0;
-    Py_XDECREF(local_type);
-    Py_XDECREF(local_value);
-    Py_XDECREF(local_tb);
-    return -1;
-}
 
 /* PyErrExceptionMatches */
   #if CYTHON_FAST_THREAD_STATE
@@ -12170,6 +11731,136 @@ bad:
         Py_DECREF(r);
         return 1;
     }
+}
+
+/* GetTopmostException */
+  #if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem *
+__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
+{
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
+           exc_info->previous_item != NULL)
+    {
+        exc_info = exc_info->previous_item;
+    }
+    return exc_info;
+}
+#endif
+
+/* SaveResetException */
+  #if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
+    *type = exc_info->exc_type;
+    *value = exc_info->exc_value;
+    *tb = exc_info->exc_traceback;
+    #else
+    *type = tstate->exc_type;
+    *value = tstate->exc_value;
+    *tb = tstate->exc_traceback;
+    #endif
+    Py_XINCREF(*type);
+    Py_XINCREF(*value);
+    Py_XINCREF(*tb);
+}
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    tmp_type = exc_info->exc_type;
+    tmp_value = exc_info->exc_value;
+    tmp_tb = exc_info->exc_traceback;
+    exc_info->exc_type = type;
+    exc_info->exc_value = value;
+    exc_info->exc_traceback = tb;
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = type;
+    tstate->exc_value = value;
+    tstate->exc_traceback = tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+#endif
+
+/* GetException */
+  #if CYTHON_FAST_THREAD_STATE
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb)
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb)
+#endif
+{
+    PyObject *local_type, *local_value, *local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    local_type = tstate->curexc_type;
+    local_value = tstate->curexc_value;
+    local_tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+#else
+    PyErr_Fetch(&local_type, &local_value, &local_tb);
+#endif
+    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
+#if CYTHON_FAST_THREAD_STATE
+    if (unlikely(tstate->curexc_type))
+#else
+    if (unlikely(PyErr_Occurred()))
+#endif
+        goto bad;
+    #if PY_MAJOR_VERSION >= 3
+    if (local_tb) {
+        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
+            goto bad;
+    }
+    #endif
+    Py_XINCREF(local_tb);
+    Py_XINCREF(local_type);
+    Py_XINCREF(local_value);
+    *type = local_type;
+    *value = local_value;
+    *tb = local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    #if CYTHON_USE_EXC_INFO_STACK
+    {
+        _PyErr_StackItem *exc_info = tstate->exc_info;
+        tmp_type = exc_info->exc_type;
+        tmp_value = exc_info->exc_value;
+        tmp_tb = exc_info->exc_traceback;
+        exc_info->exc_type = local_type;
+        exc_info->exc_value = local_value;
+        exc_info->exc_traceback = local_tb;
+    }
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = local_type;
+    tstate->exc_value = local_value;
+    tstate->exc_traceback = local_tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+#else
+    PyErr_SetExcInfo(local_type, local_value, local_tb);
+#endif
+    return 0;
+bad:
+    *type = 0;
+    *value = 0;
+    *tb = 0;
+    Py_XDECREF(local_type);
+    Py_XDECREF(local_value);
+    Py_XDECREF(local_tb);
+    return -1;
 }
 
 /* PyObject_GenericGetAttrNoDict */
@@ -14678,6 +14369,106 @@ static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
     res = __Pyx_Print(stream, arg_tuple, 1);
     Py_DECREF(arg_tuple);
     return res;
+}
+#endif
+
+/* FastTypeChecks */
+  #if CYTHON_COMPILING_IN_CPYTHON
+static int __Pyx_InBases(PyTypeObject *a, PyTypeObject *b) {
+    while (a) {
+        a = a->tp_base;
+        if (a == b)
+            return 1;
+    }
+    return b == &PyBaseObject_Type;
+}
+static CYTHON_INLINE int __Pyx_IsSubtype(PyTypeObject *a, PyTypeObject *b) {
+    PyObject *mro;
+    if (a == b) return 1;
+    mro = a->tp_mro;
+    if (likely(mro)) {
+        Py_ssize_t i, n;
+        n = PyTuple_GET_SIZE(mro);
+        for (i = 0; i < n; i++) {
+            if (PyTuple_GET_ITEM(mro, i) == (PyObject *)b)
+                return 1;
+        }
+        return 0;
+    }
+    return __Pyx_InBases(a, b);
+}
+#if PY_MAJOR_VERSION == 2
+static int __Pyx_inner_PyErr_GivenExceptionMatches2(PyObject *err, PyObject* exc_type1, PyObject* exc_type2) {
+    PyObject *exception, *value, *tb;
+    int res;
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&exception, &value, &tb);
+    res = exc_type1 ? PyObject_IsSubclass(err, exc_type1) : 0;
+    if (unlikely(res == -1)) {
+        PyErr_WriteUnraisable(err);
+        res = 0;
+    }
+    if (!res) {
+        res = PyObject_IsSubclass(err, exc_type2);
+        if (unlikely(res == -1)) {
+            PyErr_WriteUnraisable(err);
+            res = 0;
+        }
+    }
+    __Pyx_ErrRestore(exception, value, tb);
+    return res;
+}
+#else
+static CYTHON_INLINE int __Pyx_inner_PyErr_GivenExceptionMatches2(PyObject *err, PyObject* exc_type1, PyObject *exc_type2) {
+    int res = exc_type1 ? __Pyx_IsSubtype((PyTypeObject*)err, (PyTypeObject*)exc_type1) : 0;
+    if (!res) {
+        res = __Pyx_IsSubtype((PyTypeObject*)err, (PyTypeObject*)exc_type2);
+    }
+    return res;
+}
+#endif
+static int __Pyx_PyErr_GivenExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
+    Py_ssize_t i, n;
+    assert(PyExceptionClass_Check(exc_type));
+    n = PyTuple_GET_SIZE(tuple);
+#if PY_MAJOR_VERSION >= 3
+    for (i=0; i<n; i++) {
+        if (exc_type == PyTuple_GET_ITEM(tuple, i)) return 1;
+    }
+#endif
+    for (i=0; i<n; i++) {
+        PyObject *t = PyTuple_GET_ITEM(tuple, i);
+        #if PY_MAJOR_VERSION < 3
+        if (likely(exc_type == t)) return 1;
+        #endif
+        if (likely(PyExceptionClass_Check(t))) {
+            if (__Pyx_inner_PyErr_GivenExceptionMatches2(exc_type, NULL, t)) return 1;
+        } else {
+        }
+    }
+    return 0;
+}
+static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches(PyObject *err, PyObject* exc_type) {
+    if (likely(err == exc_type)) return 1;
+    if (likely(PyExceptionClass_Check(err))) {
+        if (likely(PyExceptionClass_Check(exc_type))) {
+            return __Pyx_inner_PyErr_GivenExceptionMatches2(err, NULL, exc_type);
+        } else if (likely(PyTuple_Check(exc_type))) {
+            return __Pyx_PyErr_GivenExceptionMatchesTuple(err, exc_type);
+        } else {
+        }
+    }
+    return PyErr_GivenExceptionMatches(err, exc_type);
+}
+static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObject *exc_type1, PyObject *exc_type2) {
+    assert(PyExceptionClass_Check(exc_type1));
+    assert(PyExceptionClass_Check(exc_type2));
+    if (likely(err == exc_type1 || err == exc_type2)) return 1;
+    if (likely(PyExceptionClass_Check(err))) {
+        return __Pyx_inner_PyErr_GivenExceptionMatches2(err, exc_type1, exc_type2);
+    }
+    return (PyErr_GivenExceptionMatches(err, exc_type1) || PyErr_GivenExceptionMatches(err, exc_type2));
 }
 #endif
 
