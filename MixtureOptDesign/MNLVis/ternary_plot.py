@@ -3,7 +3,7 @@ import numpy as np
 
 from Tests.utils import check_mnl_design_sum
 
-def plot_ternary_design(design):
+def plot_ternary_design(design,value=None):
     """
     Plot a ternary design in a 3D scatter plot.
 
@@ -66,12 +66,29 @@ def plot_ternary_design(design):
             size=7,
             color='blue',
         ),
-         name='Design Points',
+        name='Design Points',
         text=[f'Ing1: {q1:.2f}, Ing2: {q2:.2f}, Ing3: {q3:.2f}' for q1, q2, q3 in zip(ingredient1, ingredient2, ingredient3)],  # Add custom hover text
         hoverinfo='text',  # Show only custom hover text
         cliponaxis=False,  # Make points fully visible
     ))
-      
+    
+    if value is not None:
+        
+        value = round(value,3)
+        
+        # Add annotation for the number on the right side
+        fig.add_annotation(
+            x=0.5,  # Adjust the x position as needed
+            y=1.1,  # Adjust the y position as needed
+            text=f"I-optimality:{value}",
+            showarrow=False,
+            font=dict(
+                size=20,
+                color='black',
+            ),
+        )
+    
+    
     # Define layout
     fig.update_layout(
         ternary=dict(
