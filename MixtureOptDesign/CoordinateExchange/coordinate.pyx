@@ -201,4 +201,4 @@ class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
         print("Original Optimality criterion value: ", opt_crit_value_orig)
         print("Final Optimality criterion value: ", i_best)
         print("Number of iterations: ", it)
-        return design, design_[0],i_best,opt_crit_value_orig,len(unique_rows(design))
+        return design, design_[0],i_best,opt_crit_value_orig,design_[1]
