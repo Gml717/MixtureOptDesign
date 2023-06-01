@@ -45,7 +45,6 @@ MarkupSafe==2.1.2
 matplotlib==3.7.0
 matplotlib-inline==0.1.6
 mistune==2.0.5
--e git+https://github.com/Gml717/MixtureOptDesign.git@a5e692c29a95b0e1cf7de3679f5f12b708f51fe6#egg=MixtureOptDesign
 nbclassic==0.5.2
 nbclient==0.7.2
 nbconvert==7.2.9
