@@ -4,15 +4,34 @@ import logging
 
 
 
-from MixtureOptDesign.MNL.utils import *
+from MixtureOptDesign.mnl.utils import *
 
 from MixtureOptDesign.HaltonDraws.halton_draws import HaltonDraws
 
-from MixtureOptDesign.CoordinateExchange.coordinate_exchange import unique_rows
+from MixtureOptDesign.vns.vns_cython import unique_rows
 
 
 
 cdef class CoordinateExchangeIOptimal:
+
+    """
+    This class optimizes a design matrix using the coordinate exchange algorithm.
+
+    Attributes:
+        design (np.ndarray): The initial design matrix.
+        order (int): The order of the model.
+        n_points (int): The number of points to generate in each set.
+        iteration (int): The number of iterations to run the algorithm.
+        beta (np.ndarray): The beta parameters of the model.
+        bayesian (bool): Whether to use Bayesian optimization.
+        sigma (np.ndarray): The sigma matrix of the model.
+        kappa (int): The kappa parameter of the model.
+        num_ingredient (int): The number of ingredient in a mixture
+        num_choices (int): The number of choices in each set of the design matrix.
+        num_sets (int): The number of alternatives in a choice set.
+        i_opt (int): The I-optimality value
+        num_param (int): The numbers of parameters
+    """
     cdef public np.ndarray design
     cdef public int order
     cdef public int n_points
@@ -37,11 +56,28 @@ cdef class CoordinateExchangeIOptimal:
         int n_points,
         int iteration=10,
         np.ndarray[np.double_t, ndim=2] design=None, 
-        beta=None,#check this later for improvement
+        beta=None,#check this later
         np.npy_bool bayesian=True,
         np.ndarray[np.double_t, ndim=2] sigma=None,
         int kappa=1
         ):
+
+
+        """
+        Initializes the CoordinateExchangeIOptimal class.
+
+        Args:
+            num_ingredient (int): The number of ingredient in a mixture
+            num_choices (int): The number of choices in each set of the design matrix.
+            num_sets (int): The number of alternatives in a choice set.
+            order (int): The order of the model.
+            n_points (int): The number of points to generate in each set.
+            iteration (int): The number of iterations to run the algorithm.
+            beta (np.ndarray): The beta parameters of the model.
+            bayesian (bool): Whether to use Bayesian optimization.
+            sigma (np.ndarray): The sigma matrix of the model.
+            kappa (int): The kappa parameter of the model.
+        """
         
         self.design = design
         self.order = order
@@ -73,7 +109,6 @@ cdef class CoordinateExchangeIOptimal:
             self.beta = HaltonDraws(self.beta, self.sigma, 128).generate_draws()
     
 
-    # define the function in Cython
     cpdef np.ndarray optimize_design(self,  design_numer):
         # define the input parameters
         cdef int n_ingredients = self.num_ingredient
@@ -141,13 +176,14 @@ class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
     """
         # define the input parameters
         cdef int n_ingredients = self.num_ingredient
-        cdef int n_sets = self.num_sets
-        cdef int n_choices = self.num_choices
-        cdef int n_points = self.n_points
-        cdef int iteration = self.iteration
+        #cdef int n_sets = self.num_sets
+        #cdef int n_choices = self.num_choices
+        order = self.order
+        n_points = self.n_points
+        iteration = self.iteration
         cdef float opt_crit_value_orig, i_best, i_opt_critc_value, i_new_value
-        cdef int j, s, q, cox_direction, it
-        cdef np.ndarray[np.float_t, ndim=3] design, candidate_design
+        cdef int q, cox_direction, it
+        cdef np.ndarray[np.float_t, ndim=3] design, canditate_design
         cdef np.ndarray[np.float_t, ndim=2] cox_directions, unique_design_points 
         
 
@@ -157,13 +193,13 @@ class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
         unique_design_points = unique_rows(design.copy())
        
         # set up initial optimality value   
-        opt_crit_value_orig = get_i_optimality_bayesian(design,self.order,self.beta)
+        opt_crit_value_orig = get_i_optimality_bayesian(design,order,self.beta)
         i_best = opt_crit_value_orig 
         i_opt_critc_value = 100
         
         
         it = 0
-        for _ in range(self.iteration):
+        for _ in range(iteration):
             # If there was no improvement in this iteration
             if abs(i_opt_critc_value - i_best) < 0.001:
                 break
@@ -172,22 +208,22 @@ class ClusteredCoordinateExchangeIOptimal(CoordinateExchangeIOptimal):
             it += 1
             for i in range(len(unique_design_points)):
                 
-                    for q in range(self.num_ingredient):
-                        cox_directions = compute_cox_direction(unique_design_points[i], q, self.n_points)
+                    for q in range(n_ingredients):
+                        cox_directions = compute_cox_direction(unique_design_points[i], q, n_points)
                         # Loop through each Cox direction
                         for cox_direction in range(cox_directions.shape[0]):
                             # Create candidate design by copying current design
                             canditate_design = design.copy()
-                            indices = np.where(np.all(canditate_design == unique_design_points[i].reshape(self.num_ingredient,1,1), axis=0))
+                            indices = np.where(np.all(canditate_design == unique_design_points[i].reshape(n_ingredients,1,1), axis=0))
                             subset = canditate_design[:,indices[0],indices[1]].shape
-                            cox = cox_directions[cox_direction,:].reshape(self.num_ingredient,1,1)
+                            cox = cox_directions[cox_direction,:].reshape(n_ingredients,1,1)
                             # Replace the current cluster Mixture with the Cox direction
                             canditate_design[:,indices[0],indices[1]] = np.zeros(subset) + cox.reshape(3,1)
                             
                             
                         
                             # Compute optimality criterion for candidate design
-                            i_new_value = get_i_optimality_bayesian(canditate_design,self.order,self.beta)
+                            i_new_value = get_i_optimality_bayesian(canditate_design,order,self.beta)
                             if i_new_value != 100 and  i_best > i_new_value and abs((i_best - i_new_value)) > 0.001 :
 
 
