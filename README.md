@@ -68,7 +68,7 @@ This guide will walk you through the steps to install the MixtureOptDesign packa
 2. Activate the Virtual Environment: Activate the virtual environment by running the following command:
 
    ```
-   source package_env/bin/activate
+   source env/bin/activate
    ```
 
 3. Install Packages: With the virtual environment activated, run the following command to install requirements for MixtureOptDesign:
