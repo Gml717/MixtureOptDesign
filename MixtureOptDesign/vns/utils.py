@@ -2,7 +2,7 @@ import numpy as np
 from itertools import product,combinations
 import numpy as np
 
-from MixtureOptDesign.vns.vns import unique_rows
+from MixtureOptDesign.vns.vns_cython import unique_rows
 
 def generate_simplex_lattice_design(q:int, m:int)-> np.ndarray:
     """

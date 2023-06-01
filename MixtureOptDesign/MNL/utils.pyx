@@ -262,8 +262,7 @@ cpdef tuple[int] get_parameters(int q, int order):
     else:
         return (p1, p2, p3)
 
-import numpy as np
-cimport numpy as np
+
 
 cpdef multiply_arrays(arg1=None, arg2=None, arg3=None):
     """
@@ -318,8 +317,7 @@ cpdef multiply_arrays(arg1=None, arg2=None, arg3=None):
 
 
 
-import numpy as np
-cimport numpy as np
+
 import itertools
 
 cpdef np.ndarray interaction_terms(np.ndarray arr, int interaction):
@@ -407,9 +405,6 @@ cpdef  get_model_matrix(np.ndarray[np.float64_t, ndim=3] design, int order):
     return model_array
 
 
-import numpy as np
-cimport numpy as np
-from cython cimport boundscheck, wraparound
 
 
 # Define the get_information_matrix_mnl function in Cython
@@ -571,9 +566,7 @@ cpdef float get_i_optimality_mnl(np.ndarray[np.float64_t, ndim=3] design, int or
     return i_opt
 
 
-import numpy as np
-cimport numpy as np
-from libc.stdlib cimport rand, srand, RAND_MAX
+
 
 cpdef  generate_beta_params(int num_params, int q):
     """
@@ -618,8 +611,7 @@ cpdef  generate_beta_params(int num_params, int q):
     return np.concatenate([beta_params[:remove_idx], beta_params[remove_idx+1:]])
 
 
-import numpy as np
-cimport numpy as np
+
 
 cpdef  compute_cox_direction(np.ndarray[np.float64_t, ndim=1] q, int index, int n_points=30):
     """
@@ -656,8 +648,7 @@ cpdef  compute_cox_direction(np.ndarray[np.float64_t, ndim=1] q, int index, int 
     return cox_direction
 
 
-import numpy as np
-cimport numpy as np
+
 from numpy.linalg import det
 
 cpdef double get_d_optimality(np.ndarray[np.double_t, ndim=3] design, int order, np.ndarray[np.double_t, ndim=1] beta):

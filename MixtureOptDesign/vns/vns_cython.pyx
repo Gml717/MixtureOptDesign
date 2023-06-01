@@ -3,24 +3,24 @@ import numpy as np
 cimport numpy as np
 
 
-from MixtureOptDesign.MNL.utils import get_i_optimality_bayesian
+from MixtureOptDesign.mnl.utils import get_i_optimality_bayesian
 
-cpdef vns(np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64_t, ndim=2] other_points,  np.ndarray[np.float64_t, ndim=2] beta):
+cpdef vns(np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64_t, ndim=2] other_points,  np.ndarray[np.float64_t, ndim=2] beta,int order):
     cdef np.ndarray[np.double_t, ndim=3] new_design
     cdef double i_opt_value
-    cdef int current_neighborhood = 1
+    cdef int current_neighborhood = 0
     cdef int num_neighborhoods = 3
-    cdef int i = 0
+    
     
     while  current_neighborhood < num_neighborhoods:
         
         # Explore current neighborhood    
         if current_neighborhood == 0:
-            new_design, i_opt_value, improvement = cython_neighborhood_func_1(other_points, initial_design, beta)
+            new_design, i_opt_value, improvement = cython_neighborhood_func_1(other_points, initial_design, beta,order)
         elif current_neighborhood == 1:
-            new_design, i_opt_value, improvement = neighborhood_func_2_cython(other_points, initial_design, beta)
+            new_design, i_opt_value, improvement = cython_neighborhood_func_2(other_points, initial_design, beta,order)
         else:
-            new_design, i_opt_value, improvement,other_points = neighborhood_func_3(other_points, initial_design, beta) 
+            new_design, i_opt_value, improvement,other_points = cython_neighborhood_func_3(other_points, initial_design, beta,order) 
         
         # Check if improvement was found
         if improvement:
@@ -29,7 +29,7 @@ cpdef vns(np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64
             current_neighborhood += 1
         
         initial_design = new_design
-        print(i_opt_value)
+        
         
             
     return initial_design, i_opt_value
@@ -40,7 +40,7 @@ cpdef vns(np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64
 
 
 
-cdef  cython_neighborhood_func_1(np.ndarray[np.float64_t, ndim=2] other_points,np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64_t, ndim=2] beta):
+cdef  cython_neighborhood_func_1(np.ndarray[np.float64_t, ndim=2] other_points,np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64_t, ndim=2] beta,int order):
     
     cdef np.ndarray[np.float64_t, ndim=3] canditate_design
     cdef np.ndarray[np.float64_t, ndim=2] rows
@@ -50,7 +50,7 @@ cdef  cython_neighborhood_func_1(np.ndarray[np.float64_t, ndim=2] other_points,n
     cdef int s, j, k
     
     _, alternatives, choice = np.shape(initial_design)
-    i_opt_value = get_i_optimality_bayesian(initial_design, 3, beta)
+    i_opt_value = get_i_optimality_bayesian(initial_design, order, beta)
     rows = unique_rows(initial_design)
     
 
@@ -72,10 +72,10 @@ cdef  cython_neighborhood_func_1(np.ndarray[np.float64_t, ndim=2] other_points,n
                 canditate_design[:, j, s] = unique_points.copy()
 
                 # Compute the I-optimality of the candidate initial_design
-                i_new_value = get_i_optimality_bayesian(canditate_design, 3, beta)
+                i_new_value = get_i_optimality_bayesian(canditate_design, order, beta)
 
                 # If the I-optimality is improved, update the initial_design
-                if i_new_value != 100 and ((i_opt_value -i_new_value)/abs(i_opt_value))> 0.1:
+                if i_new_value != 100 and (i_opt_value -i_new_value)> 0.01:
 
                     initial_design = canditate_design
                     i_opt_value = i_new_value
@@ -95,8 +95,8 @@ def unique_rows(np.ndarray[np.float64_t, ndim=3] design):
 
 
 
-# Define the Cython function with the decorator
-cdef neighborhood_func_2_cython(np.ndarray[np.float64_t, ndim=2] other_points, np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64_t, ndim=2] beta):
+
+cdef cython_neighborhood_func_2(np.ndarray[np.float64_t, ndim=2] other_points, np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64_t, ndim=2] beta,int order):
 
     cdef int _, alternatives, choice,choice_idx,alternative_idx,other_choice_idx
     cdef double i_opt_value, i_new_value
@@ -104,7 +104,7 @@ cdef neighborhood_func_2_cython(np.ndarray[np.float64_t, ndim=2] other_points, n
     cdef np.ndarray[np.float64_t, ndim=3] canditate_design
 
     _, alternatives, choice = np.shape(initial_design)
-    i_opt_value = get_i_optimality_bayesian(initial_design, 3, beta)
+    i_opt_value = get_i_optimality_bayesian(initial_design, order, beta)
     improvement = False
     
     for choice_idx in range(choice):
@@ -116,9 +116,9 @@ cdef neighborhood_func_2_cython(np.ndarray[np.float64_t, ndim=2] other_points, n
                             continue
                         canditate_design = initial_design.copy()
                         canditate_design[:, alternative_idx, choice_idx], canditate_design[:, other_alternative_idx, other_choice_idx] = canditate_design[:, other_alternative_idx, other_choice_idx], canditate_design[:, alternative_idx, choice_idx]
-                        i_new_value = get_i_optimality_bayesian(canditate_design, 3, beta)
+                        i_new_value = get_i_optimality_bayesian(canditate_design, order, beta)
 
-                        if i_new_value != 100 and ((i_opt_value -i_new_value)/abs(i_opt_value))> 0.1:
+                        if i_new_value != 100 and (i_opt_value -i_new_value)> 0.01:
 
                             initial_design = canditate_design
                             i_opt_value = i_new_value
@@ -131,13 +131,13 @@ cdef neighborhood_func_2_cython(np.ndarray[np.float64_t, ndim=2] other_points, n
 
 
 
-cdef  neighborhood_func_3(np.ndarray[np.float64_t,ndim=2] other_points, np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64_t, ndim=2] beta):
+cdef  cython_neighborhood_func_3(np.ndarray[np.float64_t,ndim=2] other_points, np.ndarray[np.float64_t, ndim=3] initial_design, np.ndarray[np.float64_t, ndim=2] beta,int order):
     cdef np.ndarray[np.float64_t, ndim=2] design_points = unique_rows(initial_design)
     cdef int q = design_points.shape[1]
     #cdef np.ndarray[np.float64_t ,ndim=1] indices
     cdef tuple indices
     cdef np.ndarray[np.float64_t,ndim=3] candidate_design
-    cdef double i_opt_value = get_i_optimality_bayesian(initial_design, 3, beta)
+    cdef double i_opt_value = get_i_optimality_bayesian(initial_design, order, beta)
     cdef double i_new_value
     cdef bint improvement = False
     cdef int i,j
@@ -147,8 +147,8 @@ cdef  neighborhood_func_3(np.ndarray[np.float64_t,ndim=2] other_points, np.ndarr
         for j in range(other_points.shape[0]):
             candidate_design = initial_design.copy()
             candidate_design[:, indices[0], indices[1]] = other_points[j].reshape(q, 1).copy()
-            i_new_value = get_i_optimality_bayesian(candidate_design, 3, beta)
-            if i_new_value != 100 and ((i_opt_value -i_new_value)/abs(i_opt_value))> 0.1:
+            i_new_value = get_i_optimality_bayesian(candidate_design, order, beta)
+            if i_new_value != 100 and (i_opt_value -i_new_value) > 0.01:
 
                 initial_design = candidate_design
                 i_opt_value = i_new_value

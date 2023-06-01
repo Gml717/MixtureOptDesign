@@ -1,6 +1,6 @@
 
 from chaospy import create_halton_samples
-from MixtureOptDesign.MNL.mnl_utils import *
+from MixtureOptDesign.mnl.mnl_utils import *
 import numpy as np
 from scipy.stats import norm
 

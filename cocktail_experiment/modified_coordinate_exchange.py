@@ -1,8 +1,11 @@
-from MixtureOptDesign.data.csv_util import read_csv_file
+""""
+4.1 Example Description
+4.2 Hierarchical clustering of I-optimal design
+4.3 Modified coordinate-exchange algorithm
+"""
 import numpy as np
-from MixtureOptDesign import HierarchicalCluster, HaltonDraws,plot_ternary_design
+from MixtureOptDesign import HierarchicalCluster,plot_ternary_design,ClusteredCoordinateExchangeIOptimal
 from MixtureOptDesign.data.csv_util import read_csv_file
-from MixtureOptDesign.CoordinateExchange.coordinate import ClusteredCoordinateExchangeIOptimal
 import time
 import multiprocessing
 from tabulate import tabulate
@@ -14,7 +17,7 @@ from MixtureOptDesign.vns.vns_cython import unique_rows
 # from MixtureOptDesign.CoordinateExchange.cluster_coordinate_exchange import ClusteredCoordinateExchangeIOptimal
 
 
-
+# Time taken: 340.76520660000006s(5.6 min) 6 cores
 
 def main():
     # load beta halton draws
@@ -29,15 +32,15 @@ def main():
     
     print(unique_rows(best_design_mario))
     
-    beta = np.array( (1.36, 1.57, 2.47, -0.43, 0.50, 1.09))
+    #beta = np.array( (1.36, 1.57, 2.47, -0.43, 0.50, 1.09))
 
     
         
     # fig_initial_design = plot_ternary_design(initial_design)
     # fig_best_design = plot_ternary_design(best_design_mario)
     
-    # fig_initial_design.write_image("MixtureOptDesign/data/initial_design_cocktail.png")
-    # fig_best_design.write_image("MixtureOptDesign/data/best_design_cocktail.png")
+    # fig_initial_design.write_image("cocktail_experiment/images/initial_design_cocktail.png")
+    # fig_best_design.write_image("cocktail_experiment/images/best_design_cocktail.png")
     
     # halt1 = HaltonDraws(beta,sigma0,128)
     # beta_draws = halt1.generate_draws()
@@ -46,7 +49,7 @@ def main():
     
     h_clust = HierarchicalCluster(best_design_mario,)
 
-    h_clust.get_elbow_curve(beta_ma,3,"cocktail")
+    h_clust.get_elbow_curve(beta_ma,3,"cocktail_experiment")
     
     # Define the cluster numbers to loop through
     cluster_nums = [13,12,11,10,9,8,7]
@@ -99,4 +102,8 @@ def main():
         # Save LaTeX table to file
         with open(f'cocktail_experiment/tables/coordinate_cluster_{cluster_metric}.tex', "w") as f:
             f.write(latex_table)
+
+if __name__ == '__main__':
+    main()
+
     

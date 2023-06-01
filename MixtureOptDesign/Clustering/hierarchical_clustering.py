@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 import matplotlib.pyplot as plt
-from MixtureOptDesign.MNL.utils import get_i_optimality_bayesian, get_i_optimality_mnl
+from MixtureOptDesign.mnl.utils import get_i_optimality_bayesian, get_i_optimality_mnl
 from sklearn.cluster import AgglomerativeClustering
 from typing import List
 import pandas as pd
@@ -114,7 +114,7 @@ class Cluster:
         return replaced_data.T.reshape(self._design.shape)
         
     
-    def get_elbow_curve(self,beta:np.ndarray,order:int,name,linkage_methods:List[str]=[ 'ward','complete','average']):
+    def get_elbow_curve(self,beta:np.ndarray,order:int,path,linkage_methods:List[str]=[ 'ward','complete','average']):
         """
         Plots the elbow curve for the given clustering algorithm between the start and end values of k.
 
@@ -178,14 +178,13 @@ class Cluster:
             
             
         
-       
         # Generate LaTeX table with caption and label
         latex_table = tabulate(df.T, headers="firstrow", tablefmt="latex_booktabs",floatfmt=".6f")
         latex_table = "\\begin{table}[htbp]\n\\centering\n" + latex_table + \
                     "\n\\caption{I-opitmality for ward, complete and average methods.}\n\\label{tab:I-opitmality for ward, complete and average methods.}\n\\end{table}"
 
         # Save LaTeX table to file
-        with open(f'MixtureOptDesign/data/tables/cluster_{name}.tex', "w") as f:
+        with open(f'{path}/tables/clusters.tex', "w") as f:
             f.write(latex_table)
         
         # df.T.to_csv(f'MixtureOptDesign/data/cluster_{name}.csv', index=False)   
@@ -198,7 +197,7 @@ class Cluster:
         plt.legend()
         
         
-        plt.savefig(f'MixtureOptDesign/data/images/elbow_curve_{name}.png')
+        plt.savefig(f'{path}/images/elbow_curve.png')
         
         plt.show()
     

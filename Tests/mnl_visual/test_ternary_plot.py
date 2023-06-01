@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import pytest
 from Tests.utils import check_mnl_design_sum
 
-from MixtureOptDesign.MNLVis.ternary_plot import plot_ternary_design
+from MixtureOptDesign.mnl_visual.ternary_plot import plot_ternary_design
 
 # Define fixture for design data
 @pytest.fixture
@@ -76,6 +76,6 @@ def test_plot_ternary_design_invalid_input():
     ])
 
     with pytest.raises(ValueError):
-        #Invalid input: sum of each point's coordinates must be equal to 1./8
+        #Invalid input: sum of each point's coordinates must be equal to 1
         plot_ternary_design(invalid_design)
 

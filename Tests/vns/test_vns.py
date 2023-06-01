@@ -1,4 +1,4 @@
-from MixtureOptDesign.vns.vns import unique_rows
+from MixtureOptDesign.vns.vns_cython import unique_rows
 import numpy as np
 import pytest
 

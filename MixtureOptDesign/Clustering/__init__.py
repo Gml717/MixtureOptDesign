@@ -1,1 +1,1 @@
-from ..Clustering import *
+from ..clustering import *

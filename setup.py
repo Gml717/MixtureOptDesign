@@ -1,7 +1,5 @@
 import os
-
 import numpy as np
-
 from os.path import join
 from setuptools import setup, Extension
 from Cython.Build import cythonize
@@ -13,11 +11,11 @@ directory_path = os.path.dirname(
 
 
 ext_data = {
-    'MixtureOptDesign.CoordinateExchange.coordinate': {
-        'sources': [join(directory_path, 'MixtureOptDesign', 'CoordinateExchange', 'coordinate.pyx')],
+    'MixtureOptDesign.coordinate_exchange.coordinate': {
+        'sources': [join(directory_path, 'MixtureOptDesign', 'coordinate_exchange', 'coordinate.pyx')],
         'include': [np.get_include()]},
-    'MixtureOptDesign.MNL.utils': {
-        'sources': [join(directory_path, 'MixtureOptDesign', 'MNL', 'utils.pyx')],
+    'MixtureOptDesign.mnl.utils': {
+        'sources': [join(directory_path, 'MixtureOptDesign', 'mnl', 'utils.pyx')],
         'include': [np.get_include()]}
     # ,
     # 'MixtureOptDesign.CoordinateExchange.coordinate_cluster': {

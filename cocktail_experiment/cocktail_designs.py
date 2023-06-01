@@ -2,7 +2,7 @@ import multiprocessing
 import time
 import numpy as np
 import cProfile
-from MixtureOptDesign.CoordinateExchange.coordinate import CoordinateExchangeIOptimal
+from MixtureOptDesign.coordinate_exchange.coordinate import CoordinateExchangeIOptimal
 
 def main():
     np.random.seed(42)
@@ -17,12 +17,10 @@ def main():
         # use the pool to apply the function to each item in the list in parallel
         results = pool.map(coord_exchange.optimize_design, initial_designs)
 
-        print(results)
-            
-            
+        print(results)   
         end_time = time.perf_counter()
         print("Time taken:", end_time - start_time)
-        #Time taken: 1149.0895558
+        #Time taken: 2371.2889697
 
 
 if __name__ == '__main__':

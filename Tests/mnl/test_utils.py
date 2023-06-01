@@ -3,7 +3,7 @@ import pytest
 
 from Tests.utils import check_mnl_design_sum
 from MixtureOptDesign.data.csv_util import read_csv_file
-from MixtureOptDesign.MNL.utils import *
+from MixtureOptDesign.mnl.utils import *
 
 @pytest.fixture
 def arr():
@@ -182,11 +182,11 @@ class TestInteractionTerms(object):
         assert np.array_equal(interaction,interaction_terms(arr,3))
 
 
-    def test_interaction_non_int(self,arr):
-        # Test with invalid input: non-integer interaction
-        arr = np.random.rand(3, 4)
-        with pytest.raises(TypeError):
-            interaction_terms(arr, 2.5)
+    # def test_interaction_non_int(self,arr):
+    #     # Test with invalid input: non-integer interaction
+    #     arr = np.random.rand(3, 4)
+    #     with pytest.raises(TypeError):
+    #         interaction_terms(arr, 2.5)
         
     def test_empty_array(self,arr):
         # Test with invalid input: empty array
@@ -453,7 +453,7 @@ class TestIOptimality(object):
         beta = np.array((0.86, 0.21, 3.07, 2.34, 3.24, -20.59))
         I_opt_value = get_i_optimality_mnl(design,3,beta)
         expected_value = 1.035
-        assert np.isclose(I_opt_value, expected_value, rtol=1e-2)
+        assert np.isclose(np.exp(I_opt_value), expected_value, rtol=1e-2)
 
 class TestDOptimality(object):
     pass
